@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:birdie/introduction/intro_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:is_first_run/is_first_run.dart';
+import 'package:birdie/introduction/form.dart' as form;
 
 import 'home.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     // DeviceOrientation.portraitDown,
@@ -22,14 +24,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool? _isFirstRun;
-  bool? _isFirstCall;
+  // bool? _isFirstCall;
 
   List screens = [];
 
   void _checkFirstRun() async {
     bool ifr = await IsFirstRun.isFirstRun();
 
-    if(ifr) {
+    if (ifr) {
       setState(() {
         _isFirstRun = true;
       });
@@ -38,27 +40,23 @@ class _MyAppState extends State<MyApp> {
         _isFirstRun = false;
       });
     }
-    
   }
-
-
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _checkFirstRun();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Birdie',
       // visualDensity: VisualDensity.adaptivePlatformDensity,
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
 
-      home: _isFirstRun == true ? IntroSliderPage() :  HomePage(),
-      
+      home: form.Form()
+      // _isFirstRun == false ? IntroSliderPage() : const HomePage(),
     );
   }
 }
