@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intro_slider/dot_animation_enum.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-import 'package:birdie/introduction/form.dart' as form;
+import 'package:birdie/introduction/signup_form.dart';
 
 class IntroSliderPage extends StatefulWidget {
   @override
@@ -131,7 +131,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
         onPressed: () => Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const form.Form(),
+            builder: (_) => const SignUpForm(),
           ),
         ),
       
