@@ -38,7 +38,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       Slide(
         title: "Start messaging!",
         description: "You can start messaging with your friends and family right now! ",
-        pathImage: "assets/startmessaging.svg",
+        pathImage: "assets/images/startmessaging.svg",
       ),
     );
     // slides.add(
@@ -124,15 +124,19 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       showSkipBtn: false,
       backgroundColorAllSlides: const Color.fromARGB(255, 255, 255, 255),
       // renderSkipBtn: const Text("Skip"),
-      renderDoneBtn: TextButton(onPressed: () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const form.Form(),
+      renderDoneBtn: TextButton(
+        child: const Icon(Icons.arrow_right_alt_outlined),
+        // style: const ButtonStyle(backgroundColor:  Color(0xFF6C63FF)), 
+        ////TODO: modificare colore DONE button
+        onPressed: () => Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const form.Form(),
+          ),
         ),
-      ),
       
       
-      child: Text(""),
+     
       ),
       // Icon(Icons.done_outline_rounded, color: Color(0xFF6C63FF),),
       

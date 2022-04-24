@@ -8,10 +8,7 @@ import 'home.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    // DeviceOrientation.portraitDown,
-  ]);
+  
   runApp(MyApp());
 }
 
@@ -50,13 +47,14 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Birdie',
       // visualDensity: VisualDensity.adaptivePlatformDensity,
       debugShowCheckedModeBanner: false,
 
-      home: form.Form()
-      // _isFirstRun == false ? IntroSliderPage() : const HomePage(),
+      home: 
+      // form.Form() //TODO: create 
+      _isFirstRun == false ? IntroSliderPage() : const HomePage(),
     );
   }
 }
