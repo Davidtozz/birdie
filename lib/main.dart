@@ -6,6 +6,7 @@ import 'package:is_first_run/is_first_run.dart';
 import 'package:birdie/forms/signup_form.dart' as form;
 
 import 'home/home.dart';
+import 'test.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,8 +54,11 @@ class _MyAppState extends State<MyApp> {
       // visualDensity: VisualDensity.adaptivePlatformDensity,
       debugShowCheckedModeBanner: false,
 
-      home: SignUpForm()
-      //  _isFirstRun == true ? IntroSliderPage() : const Home(),
+      home:  Home(),
+      // Test()
+      // _isFirstRun == true ? IntroSliderPage() : ,
+      // SignUpForm()
+        
       
        //TODO: create 
      

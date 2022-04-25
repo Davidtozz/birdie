@@ -174,7 +174,7 @@ class _SignUpFormState extends State<SignUpForm> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pushReplacement(
@@ -192,7 +192,7 @@ class _SignUpFormState extends State<SignUpForm> {
                         style: GoogleFonts.roboto(color: Colors.white),
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
