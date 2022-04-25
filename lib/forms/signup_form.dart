@@ -1,28 +1,29 @@
-import 'dart:io';
-import 'dart:async';
+import 'package:birdie/forms/login_form.dart';
+import 'package:birdie/globalcolors.dart';
+import 'package:birdie/home/home.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:page_transition/page_transition.dart';
+// import 'package:image_picker/image_picker.dart';
 
 class SignUpForm extends StatefulWidget {
   const SignUpForm({Key? key}) : super(key: key);
 
   @override
-  State<Form> createState() => _FormState();
+  _SignUpFormState createState() => _SignUpFormState();
 }
 
-class _FormState extends State<Form> {
+class _SignUpFormState extends State<SignUpForm> {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  static final ImagePicker _picker = ImagePicker();
-  late Future<XFile?> image;
+  // static final ImagePicker _picker = ImagePicker();
+  // late Future<XFile?> image;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     SystemChrome.setPreferredOrientations([
@@ -43,7 +44,7 @@ class _FormState extends State<Form> {
             children: [
               FormBuilder(
                 key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
+                autovalidateMode: AutovalidateMode.always,
                 child: Column(
                   children: <Widget>[
                     const SizedBox(height: 60),
@@ -61,18 +62,16 @@ class _FormState extends State<Form> {
                     ),
                     GestureDetector(
                       child: Container(
-                          margin: const EdgeInsets.fromLTRB(0, 20, 0, 40),
-                          child: SvgPicture.asset('assets/images/profilepic.svg',height: 180),
-                          //  ProfilePicture(
-                          //     firstChild: Text('ciao'),
-                          //     secondChild: Text('buongiorno'))
-
-                          
-                          ),
+                        margin: const EdgeInsets.fromLTRB(0, 20, 0, 40),
+                        child: SvgPicture.asset('assets/images/profilepic.svg',
+                            height: 180),
+                        //  ProfilePicture(
+                        //     firstChild: Text('ciao'),
+                        //     secondChild: Text('buongiorno'))
+                      ),
                       onTap: () async => {},
                       //TODO: make avatar editable with gallery photo (pub.dev: editable_image)
                       // TODO: https://www.youtube.com/watch?v=MSv38jO4EJk
-
                     ),
                     Container(
                       // USERNAME
@@ -80,18 +79,18 @@ class _FormState extends State<Form> {
                       width: MediaQuery.of(context).size.width * 0.9,
                       child: FormBuilderTextField(
                         textInputAction: TextInputAction.next,
-                        
+                        autofocus: false,
                         keyboardType: TextInputType.text,
                         name: 'username',
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.person,
-                            color: Color(0xFF6C63FF),
+                            color: GlobalColors.purple,
                           ),
                           isDense: true,
                           labelText: 'Username',
                           border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF6C63FF))
+                              borderSide: BorderSide(color: GlobalColors.purple)
 
                               //    TODO: change input field border color
 
@@ -99,7 +98,8 @@ class _FormState extends State<Form> {
                         ),
                       ),
                     ),
-                    Container( //      EMAIL
+                    Container(
+                      //      EMAIL
                       padding: const EdgeInsets.all(10),
                       width: MediaQuery.of(context).size.width * 0.9,
                       child: FormBuilderTextField(
@@ -109,21 +109,21 @@ class _FormState extends State<Form> {
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.alternate_email_rounded,
-                            color: Color(0xFF6C63FF),
+                            color: GlobalColors.purple,
                           ),
                           isDense: true,
                           labelText: 'Email',
                           border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF6C63FF))
+                              borderSide: BorderSide(color: GlobalColors.purple)
 
-                              //    TODO: change input field border color 
-                              
+                              //    TODO: change input field border color
+
                               ),
                         ),
                       ),
                     ),
                     Container(
-                     //    PASSWORD
+                      //    PASSWORD
 
                       padding: const EdgeInsets.all(10),
                       width: MediaQuery.of(context).size.width * 0.9,
@@ -133,16 +133,15 @@ class _FormState extends State<Form> {
                         obscuringCharacter: '*',
                         name: 'password',
                         decoration: const InputDecoration(
-
                           prefixIcon: Icon(
-                            Icons.password,
-                            color: Color(0xFF6C63FF),
+                            Icons.lock_outline,
+                            color: GlobalColors.purple,
                           ),
                           isDense: true,
                           // filled: true,
                           labelText: 'Password',
                           border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF6C63FF))
+                              borderSide: BorderSide(color: GlobalColors.purple)
 
                               //    TODO: change input field border color
 
@@ -151,7 +150,7 @@ class _FormState extends State<Form> {
                       ),
                     ),
                     Container(
-                        // PHONE NUMBER 
+                      // PHONE NUMBER
 
                       padding: const EdgeInsets.all(10),
                       width: MediaQuery.of(context).size.width * 0.9,
@@ -162,12 +161,12 @@ class _FormState extends State<Form> {
                         decoration: const InputDecoration(
                           prefixIcon: Icon(
                             Icons.phone_android_rounded,
-                            color: Color(0xFF6C63FF),
+                            color: GlobalColors.purple,
                           ),
                           isDense: true,
                           labelText: 'Phone',
                           border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Color(0xFF6C63FF))
+                              borderSide: BorderSide(color: GlobalColors.purple)
 
                               //    TODO: change input field border color
 
@@ -175,50 +174,52 @@ class _FormState extends State<Form> {
                         ),
                       ),
                     ),
-                     
-                     SizedBox(height: 3),
-
-                     ElevatedButton(
-                       onPressed: () {}, 
-                       style: ButtonStyle(
-                        
-                      //  fixedSize: MaterialStateProperty.all(const Size(100,40)),
-                         
-                        //  padding: MaterialStateProperty.all(const EdgeInsets.all(10)),
-                         backgroundColor: MaterialStateProperty.all(const Color(0xFF6C63FF)),
-                       ),
-                       child: Text('Sign Up', style: GoogleFonts.roboto(color: Colors.white),),
-
-                     ),
-
-                      SizedBox(height: 10),
-
-                         Row(
-
-                           mainAxisAlignment: MainAxisAlignment.center,
-                         children: [
-                           Text('Already have an account?', style: GoogleFonts.roboto(color:const Color.fromARGB(255, 47, 46, 65))),
-                           
-                           GestureDetector(
-                             onTap: () {
-                               print("tapped");
-                              //  Navigator.push(
-                              //    context, //TODO: make it go back to the login page
-                              //    MaterialPageRoute(builder: (context) => LoginPage()),
-                              //  );
-                             },
-                             child: Text(' Sign in', 
-                             style: GoogleFonts.roboto(color: const Color(0xFF6C63FF)), 
-                            )
-                           ),
-                                                 
-                         ],
-                       ),
-                      
-
-                  
-                 
-                 ],
+                    const SizedBox(height: 3),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                                child: const Home(),
+                                type: PageTransitionType.rightToLeftWithFade));
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(GlobalColors.purple),
+                      ),
+                      child: Text(
+                        'Sign Up',
+                        style: GoogleFonts.roboto(color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Already have an account?',
+                            style:
+                                GoogleFonts.roboto(color: GlobalColors.black)),
+                        GestureDetector(
+                            onTap: () {
+                              //TODO: fix validation
+                              Navigator.pushReplacement(
+                                  context,
+                                  PageTransition(
+                                      alignment: Alignment.topLeft,
+                                      type: PageTransitionType
+                                          .rightToLeftWithFade,
+                                      duration:
+                                          const Duration(milliseconds: 200),
+                                      child: const LogInForm()));
+                            }, //TODO: insert input validation dialog
+                            child: Text(
+                              ' Sign in',
+                              style: GoogleFonts.roboto(
+                                  color: GlobalColors.purple),
+                            )),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ]),

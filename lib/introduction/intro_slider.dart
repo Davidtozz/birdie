@@ -1,10 +1,11 @@
+import 'package:birdie/globalcolors.dart';
 import 'package:flutter/material.dart';
-import 'package:birdie/home.dart';
+import 'package:birdie/home/home.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intro_slider/dot_animation_enum.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
-import 'package:birdie/introduction/signup_form.dart';
+import 'package:birdie/forms/signup_form.dart';
 
 class IntroSliderPage extends StatefulWidget {
   @override
@@ -16,14 +17,13 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
 
   @override
   void initState() {
-   
     super.initState();
     slides.add(
       Slide(
-        title: "The world in your hands",
-        description: "Birdie allows you to connect with people from all over the world!",
-        pathImage: 'assets/images/world.svg'
-      ),
+          title: "The world in your hands",
+          description:
+              "Birdie allows you to connect with people from all over the world!",
+          pathImage: 'assets/images/world.svg'),
     );
 
     slides.add(
@@ -37,7 +37,8 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
     slides.add(
       Slide(
         title: "Start messaging!",
-        description: "You can start messaging with your friends and family right now! ",
+        description:
+            "You can start messaging with your friends and family right now! ",
         pathImage: "assets/images/startmessaging.svg",
       ),
     );
@@ -69,9 +70,8 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                   //   color: Color.fromARGB(252, 127, 91, 244),
                   // ),
                   child: SvgPicture.asset(currentSlide.pathImage.toString(),
-                  height: 240.0
-                  ),
-                  
+                      height: 240.0),
+
                   // Image.asset(
                   //   currentSlide.pathImage.toString(),
                   //   matchTextDirection: true,
@@ -81,10 +81,9 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                 Container(
                   margin: const EdgeInsets.only(top: 20),
                   child: Text(
-                    
                     currentSlide.title.toString(),
                     style: const TextStyle(
-                        color: Color(0xFF6C63FF), fontSize: 25),
+                        color: GlobalColors.purple, fontSize: 25),
                   ),
                 ),
                 Container(
@@ -99,7 +98,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                   child: Text(
                     currentSlide.description.toString(),
                     style: const TextStyle(
-                      color: Color.fromARGB(255, 47, 46, 65),
+                      color: GlobalColors.black,
                       fontSize: 19,
                       height: 1.5,
                     ),
@@ -126,7 +125,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       // renderSkipBtn: const Text("Skip"),
       renderDoneBtn: TextButton(
         child: const Icon(Icons.arrow_right_alt_outlined),
-        // style: const ButtonStyle(backgroundColor:  Color(0xFF6C63FF)), 
+        // style: const ButtonStyle(backgroundColor:  GlobalColors.purple),
         ////TODO: modificare colore DONE button
         onPressed: () => Navigator.pushReplacement(
           context,
@@ -134,15 +133,12 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
             builder: (_) => const SignUpForm(),
           ),
         ),
-      
-      
-     
       ),
-      // Icon(Icons.done_outline_rounded, color: Color(0xFF6C63FF),),
-      
-      colorDot: const Color.fromARGB(255, 47, 46, 65),
-      colorActiveDot: const Color(0xFF6C63FF),
-      
+      // Icon(Icons.done_outline_rounded, color: GlobalColors.purple,),
+
+      colorDot: GlobalColors.black,
+      colorActiveDot: GlobalColors.purple,
+
       sizeDot: 8.0,
       typeDotAnimation: dotSliderAnimation.SIZE_TRANSITION,
       listCustomTabs: renderListCustomTabs(),
@@ -151,7 +147,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       onDonePress: () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const HomePage(),
+          builder: (_) => const Home(),
         ),
       ),
     );
