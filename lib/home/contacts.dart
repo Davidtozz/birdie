@@ -1,6 +1,7 @@
 import 'package:birdie/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:page_transition/page_transition.dart';
 import 'chat.dart';
 
 class Contacts extends StatefulWidget {
@@ -30,23 +31,28 @@ class _ContactsState extends State<Contacts> {
           ListTile(
             leading: CircleAvatar(
               backgroundColor: GlobalColors.purple,
-              child: Text('C', textAlign: TextAlign.center,  style: GoogleFonts.roboto(color: Colors.white, fontSize: 20, )),
+              child: Text('P', textAlign: TextAlign.center,  style: GoogleFonts.roboto(color: Colors.white, fontSize: 20, )),
             ),
             // const Icon(Icons.person, color: GlobalColors.purple),
-            title: Text("Cuncettu", style: GoogleFonts.roboto()),
+            title: Text("Pippo", style: GoogleFonts.roboto()),
             //TODO: add background color to list tile
             subtitle: const Text('last online: 10:00'),
             onTap: () {
              Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const Chat(
-                    contactName: 'Cuncettu',
+                PageTransition(
+                    alignment: Alignment.center,
+                    duration: const Duration(milliseconds: 300),
+                    reverseDuration: const Duration(milliseconds: 200),
+                  child: const Chat(
+                  
+                    contactName: 'Pippo',
                     number: '+39 452 654 789', //todo: get number from database or server
                     lastOnline: 10.24,
                     // isOnline: true, //todo: implement isOnline validation from DB or from server
                     // contactImage: 'assets/images/profile_pic.jpg',
                   ),
+                  type: PageTransitionType.scale
                 ),
               );
             },

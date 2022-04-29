@@ -1,5 +1,4 @@
 import 'package:birdie/globalcolors.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -37,16 +36,20 @@ class _ChatState extends State<Chat> {
       appBar: AppBar(
         elevation: 5.0,
         // backgroundColor: GlobalColors.purple,
-        leading: CircleAvatar(
-          backgroundColor: GlobalColors.purple,
-          child: Text(widget.contactName[0],
-              textAlign: TextAlign.center,
-              style: GoogleFonts.roboto(
-                color: Colors.white,
-                fontSize: 20,
-              )),
-        ),
-        title: Column(
+        title: Row(
+          children: [
+
+            CircleAvatar(
+              backgroundColor: GlobalColors.purple,
+              child: Text(widget.contactName[0],
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    color: Colors.white,
+                    fontSize: 20,
+                  )),
+            ),
+
+      Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,6 +61,11 @@ class _ChatState extends State<Chat> {
             ),
           ],
         ),
+
+
+          ],
+        ),
+        
       ),
 
       body: Stack(children: [
@@ -75,7 +83,11 @@ class _ChatState extends State<Chat> {
           child: Container(
             margin: const EdgeInsets.all(15),
             child: FormBuilderTextField(
+
+               
+
               onSubmitted: (value) => setState(() {
+                TextEditingController(text: "");
                 label = 'Write something...';
               }),
               onTap: () {
@@ -86,7 +98,7 @@ class _ChatState extends State<Chat> {
               name: 'message',
               decoration: InputDecoration(
                 suffixIcon: const Padding(
-                  padding:  EdgeInsets.fromLTRB(0, 11, 5, 0),
+                  padding:  EdgeInsets.fromLTRB(0, 7, 20, 0),
                   child:  FaIcon(FontAwesomeIcons.solidMessage, size: 30),
                 ),
                 
