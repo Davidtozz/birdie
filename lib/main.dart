@@ -1,21 +1,17 @@
-import 'package:birdie/forms/signup_form.dart';
 import 'package:flutter/material.dart';
-import 'package:birdie/introduction/intro_slider.dart';
-import 'package:flutter/services.dart';
 import 'package:is_first_run/is_first_run.dart';
-import 'package:birdie/forms/signup_form.dart' as form;
+import 'package:birdie/introduction/intro_slider.dart';
 
 import 'home/home.dart';
-import 'test.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  runApp(MyApp());
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -24,8 +20,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   bool? _isFirstRun;
   // bool? _isFirstCall;
-
-  
 
   void _checkFirstRun() async {
     bool ifr = await IsFirstRun.isFirstRun();
@@ -49,21 +43,18 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Birdie',
-      // visualDensity: VisualDensity.adaptivePlatformDensity,
-      debugShowCheckedModeBanner: false,
+    return MaterialApp(
+        title: 'Birdie',
+        // visualDensity: VisualDensity.adaptivePlatformDensity,
+        debugShowCheckedModeBanner: false,
+        home: _isFirstRun == true ? IntroSliderPage() : const Home()
+        // Home(),
+        // Test()
 
-      home:  
-      // _isFirstRun == false ? IntroSliderPage() : Home()
-      Home(),
-      // Test()
-     
-      // SignUpForm()
-        
-      
-       //TODO: create 
-     
-    );
+        // SignUpForm()
+
+        //TODO: create
+
+        );
   }
 }

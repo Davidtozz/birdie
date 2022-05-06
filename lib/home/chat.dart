@@ -3,11 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 class Chat extends StatefulWidget {
   final String contactName, number;
   //  pathToContactImage; //todo: implement pathToContactImage via DB or server
-  final double lastOnline;
+  final String lastOnline;
   const Chat({
     Key? key,
     required this.contactName,
@@ -23,49 +24,28 @@ class Chat extends StatefulWidget {
 class _ChatState extends State<Chat> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   String label = "Write something...";
-
-  var defaultChatBackgrounds = [
+  final defaultChatBackgrounds = [
     'assets/chat_bg/moonlight.png',
     'assets/chat_bg/purple_saturn.jpg',
     'assets/chat_bg/sunset.png',
   ];
 
+  String message = "";
+
+  String setMessage() {
+    return message;
+  }
+
+  int messageCount = 1; // ! Amount of messages in chat
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: GlobalColors.purple,
         elevation: 5.0,
         // backgroundColor: GlobalColors.purple,
-        title: Row(
-          children: [
-
-            CircleAvatar(
-              backgroundColor: GlobalColors.purple,
-              child: Text(widget.contactName[0],
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.roboto(
-                    color: Colors.white,
-                    fontSize: 20,
-                  )),
-            ),
-
-      Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.contactName),
-            Text(
-              widget.lastOnline.toString(),
-              style: GoogleFonts.roboto(fontSize: 15),
-            ),
-          ],
-        ),
-
-
-          ],
-        ),
-        
+        title: topContactInfo(),
       ),
 
       body: Stack(children: [
@@ -78,41 +58,67 @@ class _ChatState extends State<Chat> {
             ),
           ),
         ),
+        Container(
+          margin: const EdgeInsets.only(bottom: 80),
+          child: ListView.builder(
+              reverse: true,
+              itemBuilder: ((context, index) {
+                // ! Message count
+                return Message(
+                  messageBody: message,
+                );
+              }),
+              itemCount: messageCount),
+        ),
         Align(
+          // !
           alignment: Alignment.bottomCenter,
           child: Container(
             margin: const EdgeInsets.all(15),
-            child: FormBuilderTextField(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: FormBuilderTextField(
+                focusNode: FocusNode(canRequestFocus: true),
+                onSubmitted: (value) {
+                  setState(() {
+                    label = "Write something...";
 
-               
+                    message = value!;
+                    value = null;
+                    messageCount++;
+                  });
+                },
+                // controller: TextEditingController(text: label),
+                key: _fbKey,
+                onChanged: (value) {
+                  setState(() {
+                    label = "";
+                  });
+                },
+                name: 'message',
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          label = 'Write something...';
+                          messageCount++;
+                        });
+                      }, //TODO: implement sendMessage(),
+                      icon: const Icon(Icons.send)),
 
-              onSubmitted: (value) => setState(() {
-                TextEditingController(text: "");
-                label = 'Write something...';
-              }),
-              onTap: () {
-                setState(() {
-                  label = "";
-                });
-              },
-              name: 'message',
-              decoration: InputDecoration(
-                suffixIcon: const Padding(
-                  padding:  EdgeInsets.fromLTRB(0, 7, 20, 0),
-                  child:  FaIcon(FontAwesomeIcons.solidMessage, size: 30),
-                ),
-                
-                labelText: label,
-                filled: true,
-                fillColor: Colors.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                //  labelText: 'Type a message...',
-                labelStyle: GoogleFonts.roboto(
-                  fontSize: 15,
-                  color: Colors.grey,
+                  labelText: label,
+
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  //  labelText: 'Type a message...',
+                  labelStyle: GoogleFonts.roboto(
+                    fontSize: 15,
+                    color: Colors.grey,
+                  ),
                 ),
               ),
             ),
@@ -124,6 +130,45 @@ class _ChatState extends State<Chat> {
       //   onPressed: () {},
       //   child: const FaIcon(FontAwesomeIcons.solidMessage)
       // ),
+    );
+  }
+
+  //****************************************************************************************
+  //! Extracted Widgets...
+
+  Column topContactInfo() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.contactName.isEmpty ? widget.number : widget.contactName,
+        ),
+        Text(
+          'Last seen ${widget.lastOnline}',
+          style: GoogleFonts.roboto(fontSize: 15),
+        ),
+      ],
+    );
+  }
+
+  //****************************************************************************************
+}
+
+class Message extends StatelessWidget {
+  const Message({Key? key, required this.messageBody}) : super(key: key);
+
+  final String messageBody;
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const Icon(
+        Icons.message,
+        color: Colors.white,
+      ),
+      title: Text(messageBody,
+          style: GoogleFonts.roboto(fontSize: 15, color: Colors.grey)),
     );
   }
 }

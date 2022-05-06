@@ -13,9 +13,12 @@ class Contacts extends StatefulWidget {
 
 class _ContactsState extends State<Contacts> {
 
-  String contactName = ""; //todo: retrieve info from DB
-  String number = ""; //todo: retrieve info from DB
-  double lastOnline = 0.0; //todo: retrieve info from DB
+  
+
+  String name = "Giuanni"; //todo: retrieve info from DB
+  String number = "+39 465 237 0014"; //todo: retrieve info from DB
+  String lastOnline = '15:16'; //todo: retrieve info from DB
+  String lastMessageSent = "Fuck you, and i'll see you tomorrow!"; //todo: retrieve info from DB
   
   
 
@@ -24,82 +27,43 @@ class _ContactsState extends State<Contacts> {
   Widget build(BuildContext context) {
     return Scrollbar(
       interactive: true,
-      child: ListView(
-        children: [
-
-
-          ListTile(
-            leading: CircleAvatar(
-              backgroundColor: GlobalColors.purple,
-              child: Text('P', textAlign: TextAlign.center,  style: GoogleFonts.roboto(color: Colors.white, fontSize: 20, )),
-            ),
-            // const Icon(Icons.person, color: GlobalColors.purple),
-            title: Text("Pippo", style: GoogleFonts.roboto()),
-            //TODO: add background color to list tile
-            subtitle: const Text('last online: 10:00'),
-            onTap: () {
-             Navigator.push(
-                context,
-                PageTransition(
-                    alignment: Alignment.center,
-                    duration: const Duration(milliseconds: 300),
-                    reverseDuration: const Duration(milliseconds: 200),
-                  child: const Chat(
-                  
-                    contactName: 'Pippo',
-                    number: '+39 452 654 789', //todo: get number from database or server
-                    lastOnline: 10.24,
-                    // isOnline: true, //todo: implement isOnline validation from DB or from server
-                    // contactImage: 'assets/images/profile_pic.jpg',
-                  ),
-                  type: PageTransitionType.scale
-                ),
-              );
-            },
-          ),
-
-
-
-           ListTile(
-            leading: CircleAvatar(
-              backgroundColor: GlobalColors.purple,
-              child: Text('G', textAlign: TextAlign.center,  style: GoogleFonts.roboto(color: Colors.white, fontSize: 20, )),
-            ),
-            // const Icon(Icons.person, color: GlobalColors.purple),
-            title: Text("Giuanni", style: GoogleFonts.roboto()),
-            //TODO: add background color to list tile
-            subtitle: const Text('last online: 10:00'),
-            onTap: () {
-              //navigate to chat.dart
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Chat(
-                    contactName: 'A',
-                    number: '+39 452 654 789', //todo: get number from database or server
-                    lastOnline: 10.24,
-                    // isOnline: true, //todo: implement isOnline validation from DB or from server
-                    // contactImage: 'assets/images/profile_pic.jpg', //todo: get image from DB or server
-                  ),
-                ),
-              );
-
-            },
-          ),
-           ListTile(
-            leading: CircleAvatar(
-              backgroundColor: GlobalColors.purple,
-              child: Text('A', textAlign: TextAlign.center,  style: GoogleFonts.roboto(color: Colors.white, fontSize: 20, )),
-            ),
-            // const Icon(Icons.person, color: GlobalColors.purple),
-            title: Text("+39 452 654 789", style: GoogleFonts.roboto()),
-            //TODO: add background color to list tile
-            subtitle: const Text('last online: 10:00'),
-            onTap: () {
-              // Navigator.pushNamed(context, '/profile');
-            },
-          ),
-        ],
+      thumbVisibility: true,
+      
+      child: ListView.builder(
+        physics: const BouncingScrollPhysics(),
+        itemCount:
+            25, // ! itemCount is known by the amount of contacts present in the DB
+        itemBuilder: (context, index) {
+          return ListTile(
+              leading: CircleAvatar(
+                backgroundColor: GlobalColors.purple,
+                child: Text(
+                        name.isEmpty ? '?' : name[0], // ! if contact isn't saved with a name, show his number instead
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.roboto(
+                          color: Colors.white,
+                          fontSize: 20,
+                        ),
+                      )
+                   ,
+              ),
+              title: Text(name.isEmpty ? number : name, style: GoogleFonts.roboto()),
+              subtitle: Text(lastMessageSent, style: GoogleFonts.roboto()),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        alignment: Alignment.center,
+                        // duration: const Duration(milliseconds: 300),
+                        // reverseDuration: const Duration(milliseconds: 200),
+                        type: PageTransitionType.fade,
+                        child: Chat(
+                          contactName: name,  // ! pass contact name to Chat widget
+                          number: number, // ! pass contact number to Chat widget
+                          lastOnline: lastOnline, // ! pass contact last online to Chat widget 
+                        )));
+              });
+        },
       ),
     );
   }
