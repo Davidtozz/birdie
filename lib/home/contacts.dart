@@ -50,6 +50,7 @@ class _ContactsState extends State<Contacts> {
               title: Text(name.isEmpty ? number : name, style: GoogleFonts.roboto()),
               subtitle: Text(lastMessageSent, style: GoogleFonts.roboto()),
               onTap: () {
+                
                 Navigator.push(
                     context,
                     PageTransition(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:birdie/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -22,6 +24,13 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    bottomTextBoxController.dispose();
+    super.dispose();
+  }
+
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   String label = "Write something...";
   final defaultChatBackgrounds = [
@@ -29,14 +38,50 @@ class _ChatState extends State<Chat> {
     'assets/chat_bg/purple_saturn.jpg',
     'assets/chat_bg/sunset.png',
   ];
-
+  TextEditingController bottomTextBoxController = TextEditingController();
   String message = "";
+  List<String> myMessages = [], receivedMessages = [];
 
-  String setMessage() {
-    return message;
+  @override
+  void initState() {
+    // TODO: implement initState
+    getMessagesFromAPI();
+    super.initState();
   }
 
-  int messageCount = 1; // ! Amount of messages in chat
+  //post message to server using http
+  void postMessageToAPI(String msg) async {
+    var url = 'http://localhost:3000/messages';
+    var request = await http.post(Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          // 'number': widget.number,
+          'message': msg,
+        }));
+
+    debugPrint(request.statusCode.toString());
+  }
+
+  Future<void> getMessagesFromAPI() async {
+    var request =
+        await http.get(Uri.parse('http://localhost:3000/getmessages'));
+
+    var response = json.decode(request.body);
+
+    //for each message in response, add it to a list
+
+    if (request.statusCode == 200) {
+      for (var i = 0; i < response.length; i++) {
+        setState(() {
+          myMessages.add(response[i]['message']);
+        });
+      }
+
+      debugPrint(myMessages.toString());
+    } else {
+      debugPrint("Error: ${request.statusCode}");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +92,10 @@ class _ChatState extends State<Chat> {
         // backgroundColor: GlobalColors.purple,
         title: topContactInfo(),
       ),
-
       body: Stack(children: [
+        //*****************************************************************************************
         Container(
+          // ! Background image
           decoration: BoxDecoration(
             image: DecorationImage(
               isAntiAlias: true,
@@ -58,78 +104,79 @@ class _ChatState extends State<Chat> {
             ),
           ),
         ),
-        Container(
-          margin: const EdgeInsets.only(bottom: 80),
-          child: ListView.builder(
-              reverse: true,
-              itemBuilder: ((context, index) {
-                // ! Message count
-                return Message(
-                  messageBody: message,
-                );
-              }),
-              itemCount: messageCount),
-        ),
-        Align(
-          // !
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            margin: const EdgeInsets.all(15),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: FormBuilderTextField(
-                focusNode: FocusNode(canRequestFocus: true),
-                onSubmitted: (value) {
+        //*****************************************************************************************
+
+        ListView.builder(
+            shrinkWrap: true,
+            reverse: false,
+            itemBuilder: ((context, index) {
+              return Message(
+                // ? TODO: Before adding a message, check if it is a message from me or someone else
+                messageBody: myMessages[index],
+              );
+            }),
+            itemCount: myMessages.length + receivedMessages.length),
+        //*****************************************************************************************
+
+        //*****************************************************************************************
+
+        // ! TextField per i messaggi
+
+        //*****************************************************************************************
+      ]),
+      bottomSheet: FormBuilderTextField(
+        focusNode: FocusNode(canRequestFocus: true),
+        controller: bottomTextBoxController,
+        onSubmitted: (value) {
+          if (value!.isEmpty) {
+            return;
+          } else {
+            postMessageToAPI(value);
+            setState(() {
+              label = "Write something...";
+
+              message = value!;
+              value = "";
+              myMessages.add(message);
+            });
+          }
+          bottomTextBoxController.clear();
+        },
+        key: _fbKey,
+        name: 'message',
+        decoration: InputDecoration(
+          floatingLabelBehavior: FloatingLabelBehavior.never,
+          suffixIcon: IconButton(
+              // ! Button to send message
+              onPressed: () {
+                if (bottomTextBoxController.text.isEmpty) {
+                  return;
+                } else {
+                  myMessages.add(bottomTextBoxController.text);
+
                   setState(() {
-                    label = "Write something...";
-
-                    message = value!;
-                    value = null;
-                    messageCount++;
+                    label = 'Write something...';
                   });
-                },
-                // controller: TextEditingController(text: label),
-                key: _fbKey,
-                onChanged: (value) {
-                  setState(() {
-                    label = "";
-                  });
-                },
-                name: 'message',
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          label = 'Write something...';
-                          messageCount++;
-                        });
-                      }, //TODO: implement sendMessage(),
-                      icon: const Icon(Icons.send)),
+                }
+                postMessageToAPI(bottomTextBoxController.text);
+                bottomTextBoxController.clear();
+              }, //TODO: implement sendMessage(),
+              icon: const Icon(Icons.send)),
 
-                  labelText: label,
+          labelText: label,
 
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
-                  ),
-                  //  labelText: 'Type a message...',
-                  labelStyle: GoogleFonts.roboto(
-                    fontSize: 15,
-                    color: Colors.grey,
-                  ),
-                ),
-              ),
-            ),
+          filled: true,
+          fillColor: Colors.white,
+          border: const OutlineInputBorder(
+            borderSide: BorderSide.none,
+          ),
+          //  labelText: 'Type a message...',
+          labelStyle: GoogleFonts.roboto(
+            fontSize: 15,
+            color: Colors.grey,
           ),
         ),
-      ]),
-
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   child: const FaIcon(FontAwesomeIcons.solidMessage)
-      // ),
+      ),
     );
   }
 
@@ -159,16 +206,65 @@ class _ChatState extends State<Chat> {
 class Message extends StatelessWidget {
   const Message({Key? key, required this.messageBody}) : super(key: key);
 
+  // factory Message.fromJson(Map<String, dynamic> json) => Message(
+  //       messageBody: json['message'] as String,
+  //     );
+
   final String messageBody;
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(
-        Icons.message,
-        color: Colors.white,
+    return Container(
+      margin: const EdgeInsets.fromLTRB(6.5, 0, 6.5, 0),
+      child: InkWell(
+        //*****************************************************************************************
+        // ! Confirm dialog to delete message
+        onLongPress: () {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text("Delete message"),
+              content: const Text("Are you sure you want to delete this message?"),
+              actions: [
+                TextButton(
+                  child: const Text("Yes"),
+                  onPressed: () {
+
+                    http.delete(Uri.parse('localhost:3000/messages/$messageBody'));
+
+                    Navigator.pop(context);
+                  },
+                ),
+                TextButton(
+                  child: const Text("No"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+       //****************************************************************************************
+        child: ListTile(
+          title: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            LimitedBox(
+              maxWidth: MediaQuery.of(context).size.width * 0.6,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  messageBody,
+                  // maxLines: null,
+                  style: GoogleFonts.roboto(fontSize: 17, color: Colors.black),
+                ),
+              ),
+            )
+          ]),
+        ),
       ),
-      title: Text(messageBody,
-          style: GoogleFonts.roboto(fontSize: 15, color: Colors.grey)),
     );
   }
 }
