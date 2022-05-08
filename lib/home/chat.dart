@@ -51,20 +51,20 @@ class _ChatState extends State<Chat> {
 
   //post message to server using http
   void postMessageToAPI(String msg) async {
-    var url = 'http://localhost:3000/messages';
+    var url = 'http://localhost:3000/messages'; // ! sostituire "192.168.1.115" con "localhost"
     var request = await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           // 'number': widget.number,
           'message': msg,
         }));
-
-    debugPrint(request.statusCode.toString());
   }
+
+
 
   Future<void> getMessagesFromAPI() async {
     var request =
-        await http.get(Uri.parse('http://localhost:3000/getmessages'));
+        await http.get(Uri.parse('http://localhost:3000/getmessages')); // ! sostituire "192.168.1.115" con "localhost"
 
     var response = json.decode(request.body);
 
@@ -229,7 +229,7 @@ class Message extends StatelessWidget {
                   child: const Text("Yes"),
                   onPressed: () {
 
-                    http.delete(Uri.parse('localhost:3000/messages/$messageBody'));
+                    http.delete(Uri.parse('localhost:3000/messages/$messageBody')); // ! sostituire "192.168.1.115" con "localhost"
 
                     Navigator.pop(context);
                   },
