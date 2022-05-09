@@ -28,6 +28,8 @@ class _HomeState extends State<Home> {
 
   int bottomNavigationIndex = 0;
 
+  
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -93,7 +95,7 @@ class _HomeState extends State<Home> {
           color: Colors.white,
         ),
       ),
-      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.5,
+      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
       drawer: Drawer(
         elevation: 5.0,
         child: SingleChildScrollView(

@@ -118,7 +118,7 @@ class _ChatState extends State<Chat> {
             itemCount: myMessages.length + receivedMessages.length),
         //*****************************************************************************************
 
-        //*****************************************************************************************
+       
 
         // ! TextField per i messaggi
 

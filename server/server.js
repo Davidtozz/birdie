@@ -76,13 +76,31 @@ app.get("/getcontacts", (req, res) => {
       throw err
     }
 
-    console.log('contacts sent:')
+    console.log('contacts sent: '+ result)
     res.send(result);
 
   })
 
 
 });
+
+
+app.delete("/deletecontact", (req, res) => {
+
+  let sql = "DELETE FROM contacts WHERE contact_name = '"+req.body['contact_name']+"'";
+  db.query(sql, (err,result) => {
+      
+      if (err) {
+        throw err
+      }
+      console.log('Deleted contact: ' + req.body['contact_name'])
+
+      res.send(result);
+
+  })
+
+})
+
 
 app.listen("3000", () => {
   console.log("Server is successfully running on port 3000");
