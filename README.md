@@ -1,8 +1,4 @@
-# Birdie - Chirping via text 
+# Birdie - A Simple yet complex texting application. 
 
-Simple texting Flutter application. 
+This is my first Flutter application which can be considered as such. Many of the required features of a texting app such as Telegram or Whatsapp are still missing and hopefully will be implemented, in my own way, in the near future.  
 
-## Getting Started
-
-The point of this application is to learn backend development with NodeJS and MySQL database. In addition, an AWS instance might be used. 
- 
