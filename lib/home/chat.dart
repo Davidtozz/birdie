@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:birdie/globalcolors.dart';
 import 'package:flutter/material.dart';
@@ -8,16 +9,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 class Chat extends StatefulWidget {
-  final String contactName, number;
+  final String contactName, lastOnline;
+  final String? number;
   //  pathToContactImage; //todo: implement pathToContactImage via DB or server
-  final String lastOnline;
-  const Chat({
-    Key? key,
-    required this.contactName,
-    required this.number,
-    required this.lastOnline,
-    // required this.pathToContactImage,
-  }) : super(key: key);
+
+  const Chat(
+      {Key? key,
+      required this.contactName,
+      required this.lastOnline,
+      this.number})
+      : super(key: key);
 
   @override
   State<Chat> createState() => _ChatState();
@@ -51,7 +52,8 @@ class _ChatState extends State<Chat> {
 
   //post message to server using http
   void postMessageToAPI(String msg) async {
-    var url = 'http://localhost:3000/messages'; // ! sostituire "192.168.1.115" con "localhost"
+    var url =
+        'http://${Platform.isWindows ? 'localhost' : 'localhost'}:3000/messages'; // ! sostituire "localhost" con "localhost"
     var request = await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -60,11 +62,9 @@ class _ChatState extends State<Chat> {
         }));
   }
 
-
-
   Future<void> getMessagesFromAPI() async {
-    var request =
-        await http.get(Uri.parse('http://localhost:3000/getmessages')); // ! sostituire "192.168.1.115" con "localhost"
+    var request = await http.get(Uri.parse(
+        'http://localhost:3000/getmessages')); // ! sostituire "localhost" con "localhost"
 
     var response = json.decode(request.body);
 
@@ -73,7 +73,7 @@ class _ChatState extends State<Chat> {
     if (request.statusCode == 200) {
       for (var i = 0; i < response.length; i++) {
         setState(() {
-          myMessages.add(response[i]['message']);
+          myMessages.add(response[i]['content']);
         });
       }
 
@@ -117,8 +117,6 @@ class _ChatState extends State<Chat> {
             }),
             itemCount: myMessages.length + receivedMessages.length),
         //*****************************************************************************************
-
-       
 
         // ! TextField per i messaggi
 
@@ -190,7 +188,7 @@ class _ChatState extends State<Chat> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.contactName.isEmpty ? widget.number : widget.contactName,
+          widget.contactName,
         ),
         Text(
           'Last seen ${widget.lastOnline}',
@@ -215,55 +213,24 @@ class Message extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(6.5, 0, 6.5, 0),
-      child: InkWell(
-        //*****************************************************************************************
-        // ! Confirm dialog to delete message
-        onLongPress: () {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text("Delete message"),
-              content: const Text("Are you sure you want to delete this message?"),
-              actions: [
-                TextButton(
-                  child: const Text("Yes"),
-                  onPressed: () {
-
-                    http.delete(Uri.parse('localhost:3000/messages/$messageBody')); // ! sostituire "192.168.1.115" con "localhost"
-
-                    Navigator.pop(context);
-                  },
-                ),
-                TextButton(
-                  child: const Text("No"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-       //****************************************************************************************
-        child: ListTile(
-          title: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            LimitedBox(
-              maxWidth: MediaQuery.of(context).size.width * 0.6,
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  messageBody,
-                  // maxLines: null,
-                  style: GoogleFonts.roboto(fontSize: 17, color: Colors.black),
-                ),
+      child: ListTile(
+        title: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          LimitedBox(
+            maxWidth: MediaQuery.of(context).size.width * 0.6,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
               ),
-            )
-          ]),
-        ),
+              child: Text(
+                messageBody,
+                // maxLines: null,
+                style: GoogleFonts.roboto(fontSize: 17, color: Colors.black),
+              ),
+            ),
+          )
+        ]),
       ),
     );
   }

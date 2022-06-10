@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:birdie/globalcolors.dart';
 import 'package:birdie/home/contacts.dart';
 import 'package:flutter/material.dart';
@@ -24,16 +24,16 @@ class _HomeState extends State<Home> {
     ),
   ];
 
-  TextEditingController dialogController = TextEditingController();
+  TextEditingController dialogContactNameController = TextEditingController(),
+      dialogContactNumberController = TextEditingController();
 
   int bottomNavigationIndex = 0;
-
-  
 
   @override
   void dispose() {
     // TODO: implement dispose
-    dialogController.dispose();
+    dialogContactNameController.dispose();
+    dialogContactNumberController.dispose();
     super.dispose();
   }
 
@@ -50,24 +50,29 @@ class _HomeState extends State<Home> {
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text("Add a contact"),
-              content: TextField(
-                onSubmitted: (value) {
-                  // dialogController.text = value;
-                  http.post(Uri.parse('http://localhost:3000/addcontact'),
-                      headers: {'Content-Type': 'application/json'},
-                      body: json.encode({'name': value}));
+              title: const Text(
+                "Add a contact",
+                textAlign: TextAlign.center,
+              ),
+              content: SizedBox(
+                child: TextField(
+                  onSubmitted: (value) {
+                    http.post(
+                        Uri.parse('http://localhost:3000/addcontact'),
+                        headers: {'Content-Type': 'application/json'},
+                        body: json.encode({'name': value}));
 
-                  dialogController.text = value = "";
-                  Navigator.pop(context);
-                },
-                controller: dialogController,
-                decoration: const InputDecoration(
-                  labelText: "Name",
+                    dialogContactNameController.text = value = "";
+                    Navigator.pop(context);
+
+                    // dialogController.text = value;
+                  },
+                  controller: dialogContactNameController,
+                  decoration: const InputDecoration(
+                    labelText: "Name",
+                  ),
                 ),
               ),
-
-
               actions: <Widget>[
                 TextButton(
                   child: const Text("Cancel"),
@@ -78,10 +83,12 @@ class _HomeState extends State<Home> {
                 TextButton(
                   child: const Text("Add"),
                   onPressed: () {
-                    http.post(Uri.parse('http://localhost:3000/addcontact'),
+                    http.post(
+                        Uri.parse('http://localhost:3000/addcontact'),
                         headers: {'Content-Type': 'application/json'},
-                        body: json.encode({'name': dialogController.text}));
-                    dialogController.clear();
+                        body: json.encode(
+                            {'name': dialogContactNameController.text}));
+                    dialogContactNameController.clear();
                     Navigator.of(context).pop();
                   },
                 ),
@@ -89,7 +96,6 @@ class _HomeState extends State<Home> {
             ),
           );
         },
-        
         child: const FaIcon(
           FontAwesomeIcons.plus,
           color: Colors.white,
