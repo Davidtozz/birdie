@@ -4,31 +4,37 @@ const bodyParser = require("body-parser");
 const socketio = require("socket.io");
 const crypt = require("bcrypt")
 
+port = process.env.PORT || 3000
+
 const app = express();
 app.use(bodyParser.json());
 //Create Connections
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "birdie",
-});
+// ! Local database connection
 
 // const db = mysql.createConnection({
-//   host: "birdie-database.cqetlhwo4cwr.eu-central-1.rds.amazonaws.com",
+//   host: "localhost",
 //   user: "root",
-//   port: "3306",
-//   password: "!Satsuma._.2003!",
+//   password: "",
 //   database: "birdie",
 // });
+
+// ! Remote database connection
+const db = mysql.createConnection({
+   
+  host: "database-1.cqetlhwo4cwr.eu-central-1.rds.amazonaws.com",
+  port: "3306",
+  user: "admin",
+  password: "birdie123", // ! This is usually a bad idea, but for this project it's fine
+  database: "auth_test",
+});
 
 // connect to database
 db.connect((err) => {
   if (err) {
     throw err;
   }
-  console.log("Database connection successful");
+  console.log("Connection to AWS RDS instance successful");
 });
 
 app.post("/api/register", (req, res) => {
@@ -67,7 +73,7 @@ app.post("/messages", (req, res) => {
 })
 
 
-app.get("/getmessages", (req, res) => {
+app.get("/api/getmessages", (req, res) => {
   let sql = "SELECT content FROM message";
   db.query(sql, (err, result) => {
     if (err) {
@@ -83,7 +89,7 @@ app.get("/getmessages", (req, res) => {
 })
 
 
-app.post("/addcontact", (req, res) => {
+app.post("/api/addcontact", (req, res) => {
   let contact = req.body;
   console.log(contact);
   
@@ -98,7 +104,7 @@ app.post("/addcontact", (req, res) => {
 
 })})
 
-app.get("/getcontacts", (req, res) => {
+app.get("/api/getcontacts", (req, res) => {
 
   let sql = "SELECT name FROM contact";
   db.query(sql, (err,result) => {
@@ -131,6 +137,6 @@ app.delete("/deletecontact", (req, res) => {
 })
 
 
-app.listen("3000", () => {
+app.listen(port, () => {
   console.log("Server is successfully running on port 3000");
 });

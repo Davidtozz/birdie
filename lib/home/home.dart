@@ -41,66 +41,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       // systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: GlobalColors.purple,
-        tooltip: 'Add',
-        onPressed: () {
-          //show a dialog
-
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text(
-                "Add a contact",
-                textAlign: TextAlign.center,
-              ),
-              content: SizedBox(
-                child: TextField(
-                  onSubmitted: (value) {
-                    http.post(
-                        Uri.parse('http://localhost:3000/addcontact'),
-                        headers: {'Content-Type': 'application/json'},
-                        body: json.encode({'name': value}));
-
-                    dialogContactNameController.text = value = "";
-                    Navigator.pop(context);
-
-                    // dialogController.text = value;
-                  },
-                  controller: dialogContactNameController,
-                  decoration: const InputDecoration(
-                    labelText: "Name",
-                  ),
-                ),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text("Cancel"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text("Add"),
-                  onPressed: () {
-                    http.post(
-                        Uri.parse('http://localhost:3000/addcontact'),
-                        headers: {'Content-Type': 'application/json'},
-                        body: json.encode(
-                            {'name': dialogContactNameController.text}));
-                    dialogContactNameController.clear();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-        child: const FaIcon(
-          FontAwesomeIcons.plus,
-          color: Colors.white,
-        ),
-      ),
+      
       drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.3,
       drawer: Drawer(
         elevation: 5.0,
@@ -114,13 +55,13 @@ class _HomeState extends State<Home> {
                     height: 220,
                     color: GlobalColors.purple,
                     child: Row(
-                      children: const [
+                      children:  [
                         Padding(
-                          padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                           child: CircleAvatar(
-                            backgroundColor: Colors.white,
+                            backgroundColor: Colors.black,
                             radius: 65,
-                            child: Text('img'),
+                            child: SvgPicture.asset('assets/images/profilepic.svg', width: 130, height: 130,),
                           ),
                         ),
                       ],

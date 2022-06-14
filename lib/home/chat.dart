@@ -52,9 +52,10 @@ class _ChatState extends State<Chat> {
 
   //post message to server using http
   void postMessageToAPI(String msg) async {
-    var url =
-        'http://${Platform.isWindows ? 'localhost' : 'localhost'}:3000/messages'; // ! sostituire "localhost" con "localhost"
-    var request = await http.post(Uri.parse(url),
+    var url = 
+    // 'localhost:5000/api/postmessages';
+    'https://birdie-auth-testing.herokuapp.com/api/postmessages'; // ! API HEROKU URL
+    await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           // 'number': widget.number,
@@ -64,7 +65,9 @@ class _ChatState extends State<Chat> {
 
   Future<void> getMessagesFromAPI() async {
     var request = await http.get(Uri.parse(
-        'http://localhost:3000/getmessages')); // ! sostituire "localhost" con "localhost"
+      // 'https//localhost:5000/api/getmessages',
+        'https://birdie-auth-testing.herokuapp.com/api/getmessages'
+        )); // ! sostituire "localhost" con "localhost"
 
     var response = json.decode(request.body);
 

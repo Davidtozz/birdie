@@ -1,5 +1,7 @@
 import 'package:birdie/forms/signup_form.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:birdie/introduction/intro_slider.dart';
 
@@ -9,7 +11,8 @@ import 'home/home.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(const MyApp());
+
+    runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
