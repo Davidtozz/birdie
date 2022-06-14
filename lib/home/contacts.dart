@@ -104,6 +104,11 @@ class _ContactsState extends State<Contacts> {
                         name.clear();
                         fetchFromAWS = fetchData();
                       })),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(GlobalColors.purple),
+                    foregroundColor: MaterialStateProperty.all(Colors.white),
+                  ),
                   child: Text(
                     'Retry',
                     style: GoogleFonts.roboto(
@@ -111,11 +116,6 @@ class _ContactsState extends State<Contacts> {
                       fontWeight: FontWeight.w500,
                       color: Colors.white,
                     ),
-                  ),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(GlobalColors.purple),
-                    foregroundColor: MaterialStateProperty.all(Colors.white),
                   ),
                 ),
               ],
@@ -244,13 +244,16 @@ class _ContactsState extends State<Contacts> {
                               name.clear();
                               fetchFromAWS = fetchData();
                         })),
+                        backgroundColor: Colors.grey[600],
+                        heroTag: 'refresh',
                         child: const Icon(Icons.refresh),
-                        backgroundColor: Colors.grey[600],),
+                        ),
                         
                   ),
                   FloatingActionButton( // ? Add contact FAB
                     backgroundColor: GlobalColors.purple,
                     tooltip: 'Add',
+                    heroTag: 'add',
                     onPressed: () {
                       //show a dialog
 
