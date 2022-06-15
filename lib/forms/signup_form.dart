@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:birdie/forms/login_form.dart';
 import 'package:birdie/globalcolors.dart';
 import 'package:birdie/home/home.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
+import 'package:birdie/shared/avatar.dart';
 // import 'package:image_picker/image_picker.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -18,11 +22,11 @@ class SignUpForm extends StatefulWidget {
 }
 
 class _SignUpFormState extends State<SignUpForm> {
-  final _formKey = GlobalKey<FormBuilderState>();
+  final _formKey = GlobalKey<FormState>();
 
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   // static final ImagePicker _picker = ImagePicker();
   // late Future<XFile?> image;
@@ -38,125 +42,135 @@ class _SignUpFormState extends State<SignUpForm> {
   }
 
   @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _emailController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SingleChildScrollView(
-      child: Center(
-        child: Column(
-            //  mainAxisAlignment: MainAxisAlignment.center,
-            // crossAxisAlignment: CrossAxisAlignment.center,
+    return SafeArea(
+      left: false,
+      right: false,
+      child: Scaffold(
+          body: Center(
+        child: SingleChildScrollView(
+          reverse: true,
+          child: Column(mainAxisAlignment: MainAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center,
 
-            children: [
-              FormBuilder(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  children: <Widget>[
-                    const SizedBox(height: 60),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
-                        child: Text(
-                          'Create your Birdie profile!',
-                          style: GoogleFonts.roboto(
-                              fontSize: 40, fontWeight: FontWeight.bold),
-                          textAlign: TextAlign.center,
+              children: [
+                Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    children: [
+                      // const SizedBox(height: 60),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+                          child: Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            child: Text(
+                              'Create your Birdie profile!',
+                              style: GoogleFonts.roboto(
+                                  fontSize: 40, fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      child: Container(
-                        margin: const EdgeInsets.fromLTRB(0, 20, 0, 40),
-                        child: SvgPicture.asset('assets/images/profilepic.svg',
-                            height: 180),
-                        //  ProfilePicture(
-                        //     firstChild: Text('ciao'),
-                        //     secondChild: Text('buongiorno'))
+                      GestureDetector(
+                        child: Container(
+                          margin: const EdgeInsets.fromLTRB(0, 20, 0, 40),
+                          child: const Avatar(
+                              icon: FontAwesomeIcons.arrowUpFromBracket,
+                              size: 22),
+                        ),
+                        onTap: () {},
                       ),
-                      onTap: () async => {},
-                      //TODO: make avatar editable with gallery photo (pub.dev: editable_image)
-                      // TODO: https://www.youtube.com/watch?v=MSv38jO4EJk
-                    ),
-                    UsernameTextField(usernameController: _usernameController),
-                    EmailTextField(emailController: _emailController),
-                    PasswordTextField(
-                      passwordController: _passwordController,
-                    ),
-                    const SizedBox(height: 50),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          return;
-                        }
 
-                        Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                                child: const Home(),
-                                type: PageTransitionType.rightToLeftWithFade));
-                      },
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(GlobalColors.purple),
+                       UsernameTextField(controller: _usernameController,),
+                       EmailTextField(controller: _emailController,),
+                       PasswordTextField(controller: _passwordController,),
+                      const SizedBox(height: 50),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            var url =
+                                'https://birdie-auth-testing.herokuapp.com/api/users/newuser';
+
+                            http.post(Uri.parse(url), 
+                            
+                            body: json.encode({
+                              'username': _usernameController.text,
+                              'email': _emailController.text,
+                              'psw': _passwordController.text,
+                            }),
+                            
+                            
+                            );
+                          }
+
+                          Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: const Home(),
+                                  type:
+                                      PageTransitionType.rightToLeftWithFade));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: GlobalColors.purple,
+
+                          // backgroundColor:
+                          //     MaterialStateProperty.all(GlobalColors.purple),
+                        ),
+                        child: Text(
+                          'Sign Up',
+                          style: GoogleFonts.roboto(color: Colors.white),
+                        ),
                       ),
-                      child: Text(
-                        'Sign Up',
-                        style: GoogleFonts.roboto(color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('Already have an account?',
-                            style:
-                                GoogleFonts.roboto(color: GlobalColors.black)),
-                        GestureDetector(
-                            onTap: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  PageTransition(
-                                      alignment: Alignment.topLeft,
-                                      type: PageTransitionType
-                                          .rightToLeftWithFade,
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      child: const LogInForm()));
-                            },
-                            child: Text(
-                              'Sign in',
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Already have an account?',
                               style: GoogleFonts.roboto(
-                                  color: GlobalColors.purple),
-                            )),
-                      ],
-                    ),
-                  ],
+                                  color: GlobalColors.black)),
+                          GestureDetector(
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    PageTransition(
+                                        alignment: Alignment.topLeft,
+                                        type: PageTransitionType
+                                            .rightToLeftWithFade,
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        child: const LogInForm()));
+                              },
+                              child: Text(
+                                ' Sign in',
+                                style: GoogleFonts.roboto(
+                                    color: GlobalColors.purple),
+                              )),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ]),
-      ),
-    ));
+              ]),
+        ),
+      )),
+    );
   }
 }
 
 class UsernameTextField extends StatelessWidget {
   const UsernameTextField({
     Key? key,
-    required TextEditingController usernameController,
-  })  : _usernameController = usernameController,
-        super(key: key);
+    required this.controller,
+  })  : super(key: key);
 
-  final TextEditingController _usernameController;
+  final TextEditingController controller;
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -164,28 +178,31 @@ class UsernameTextField extends StatelessWidget {
       // ! USERNAME
       padding: const EdgeInsets.all(10),
       width: MediaQuery.of(context).size.width * 0.9,
-      child: FormBuilderTextField(
-        onSubmitted: ((value) {
+      child: TextFormField(
+        onFieldSubmitted: ((value) {
           // request = http.post(Uri.parse('http://localhost:3000/api/register'))
         }),
 
         cursorColor: GlobalColors.purple,
         // key: _formKey,
-        textCapitalization: TextCapitalization.words,
-        textInputAction: TextInputAction.next,
-        controller: _usernameController,
-        validator: (value) {
-          value = _usernameController.text;
 
-          if (value.isNotEmpty && value.length > 3) {
-            return null;
-          } else if (value.length > 24) {
-            return 'Username must be less than 24 characters';
+        textInputAction: TextInputAction.next,
+        controller: controller,
+        validator: (value) {
+          value = controller.text;
+
+          if (value.length > 16) {
+            return 'Username must be less than 16 characters';
           }
+
+          if (value.contains(RegExp(r'[^a-z]'))) {
+            return 'Username must be lowercase';
+          }
+          return null;
         },
 
         keyboardType: TextInputType.text,
-        name: 'username',
+
         decoration: const InputDecoration(
           border: OutlineInputBorder(),
           floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -209,9 +226,10 @@ class UsernameTextField extends StatelessWidget {
 
 class PasswordTextField extends StatelessWidget {
   const PasswordTextField({
-    Key? key,
-    required TextEditingController passwordController,
-  }) : super(key: key);
+    Key? key, required this.controller,
+  })  : super(key: key);
+
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -219,11 +237,10 @@ class PasswordTextField extends StatelessWidget {
       // !   PASSWORD
       padding: const EdgeInsets.all(10),
       width: MediaQuery.of(context).size.width * 0.9,
-      child: FormBuilderTextField(
+      child: TextFormField(
         textInputAction: TextInputAction.next,
         obscureText: true,
         obscuringCharacter: '*',
-        name: 'password',
         decoration: const InputDecoration(
           focusColor: GlobalColors.purple,
           floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -248,9 +265,10 @@ class PasswordTextField extends StatelessWidget {
 
 class EmailTextField extends StatelessWidget {
   const EmailTextField({
-    Key? key,
-    required TextEditingController emailController,
-  }) : super(key: key);
+    Key? key, required this.controller,
+  })  : super(key: key);
+
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -258,10 +276,9 @@ class EmailTextField extends StatelessWidget {
       // !     EMAIL
       padding: const EdgeInsets.all(10),
       width: MediaQuery.of(context).size.width * 0.9,
-      child: FormBuilderTextField(
+      child: TextFormField(
         textInputAction: TextInputAction.next,
         keyboardType: TextInputType.emailAddress,
-        name: 'email',
         decoration: const InputDecoration(
           floatingLabelBehavior: FloatingLabelBehavior.never,
           prefixIcon: Icon(
@@ -281,31 +298,3 @@ class EmailTextField extends StatelessWidget {
     );
   }
 }
-
-/* // ! Attempt to change avatar image
-class ProfilePicture extends StatefulWidget {
-  const ProfilePicture({Key? key, required this.swap}) : super(key: key);
-
-  final bool swap;
-
-  @override
-  State<ProfilePicture> createState() => _ProfilePictureState();
-}
-
-class _ProfilePictureState extends State<ProfilePicture> {
-  bool swap = false;
-
-  @override
-  void initState() {
-    swap = widget.swap;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: swap ? first : second,
-    );
-  }
-}
-*/

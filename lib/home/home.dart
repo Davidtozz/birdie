@@ -12,6 +12,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:birdie/shared/avatar.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -21,7 +22,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   final screens = [
     const Contacts(),
     const Center(
@@ -65,8 +65,7 @@ class _HomeState extends State<Home> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          ProfilePicture(),
-
+                          Avatar(icon: FontAwesomeIcons.cameraRotate),
                           Text(
                             "John Doe",
                             style: GoogleFonts.roboto(
@@ -155,80 +154,3 @@ class _HomeState extends State<Home> {
 
 
 
-
-class ProfilePicture extends StatefulWidget {
-   ProfilePicture({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<ProfilePicture> createState() => _ProfilePictureState();
-}
-
-class _ProfilePictureState extends State<ProfilePicture> {
-
-   File? profilePicture;
-
-    Future<File> saveImagePermanently(String imagePath) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final name = basename(imagePath);
-    final image = File('${directory.path}/$name');
-
-    return File(imagePath).copy(image.path);
-  }
-
-  Future pickImage(ImageSource source) async {
-    try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
-
-      // final imageTemporary = File(image.path);
-      final imagePermanent = await saveImagePermanently(image.path);
-      setState(() => profilePicture = imagePermanent);
-    } on PlatformException catch (e) {
-      debugPrint('Failed to pick image: ${e.message}');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => pickImage(ImageSource.gallery),
-      child: Stack(
-        alignment: AlignmentDirectional.bottomEnd,
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.black,
-            radius: 65,
-            child: profilePicture != null
-                ? ClipOval(
-                    child: Image.file(profilePicture as File,
-                        width: 130, height: 130, fit: BoxFit.cover))
-                : SvgPicture.asset(
-                    'assets/images/profilepic.svg',
-                    width: 130,
-                    height: 130,
-                  ),
-          ),
-          Positioned(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(50),
-              ),
-              child: IconButton(
-                onPressed: (() {}),
-                icon: const FaIcon(
-                  FontAwesomeIcons.cameraRotate,
-                  size: 25,
-                  color: Colors.white,
-                ),
-                padding: const EdgeInsets.all(0),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -12,44 +12,6 @@ import 'home/home.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /* ErrorWidget.builder = (details) {
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          color: Colors.red,
-          child: SvgPicture.asset('assets/images/503.svg', height: 100,),
-        
-
-        // return Center(
-        //   child:  Text("Error: ${details.exception.toString()}"), 
-        
-        
-
-        // return Scaffold(
-        //   floatingActionButton: null,
-        //   body: SizedBox(
-        //     height: 200,
-        //     child: SvgPicture.asset(
-        //       'assets/images/503.svg',
-        //       height: 100,
-        //     ),
-        //   ),
-          // Wrap(
-          //   direction: Axis.vertical,
-          //   children:
-          //   const SizedBox(height: 20),
-          //   Text(
-          //     'Oops! Something went wrong.',
-          //     style:
-          //         GoogleFonts.roboto(fontSize: 20, fontWeight: FontWeight.w500),
-          //   )] ,
-        ),
-      ],
-    );
-  };
-  */
   runApp(const MyApp());
 }
 
@@ -67,15 +29,9 @@ class _MyAppState extends State<MyApp> {
   void _checkFirstRun() async {
     bool ifr = await IsFirstRun.isFirstRun();
 
-    if (ifr) {
-      setState(() {
-        _isFirstRun = true;
-      });
-    } else {
-      setState(() {
-        _isFirstRun = false;
-      });
-    }
+    if (ifr == true) setState(() { _isFirstRun = true; });
+      
+    
   }
 
   @override
@@ -90,12 +46,12 @@ class _MyAppState extends State<MyApp> {
         title: 'Birdie',
         // visualDensity: VisualDensity.adaptivePlatformDensity,
         debugShowCheckedModeBanner: false,
-        home: Home()
+        home: SignUpForm()
         // _isFirstRun == true ? IntroSliderPage() : const Home()
         // Home(),
         // Test()
 
-        //TODO: create
+       
 
         );
   }
