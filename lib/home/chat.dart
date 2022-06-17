@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:birdie/globalcolors.dart';
+import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 

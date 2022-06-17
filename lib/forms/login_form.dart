@@ -1,5 +1,6 @@
-import 'package:birdie/globalcolors.dart';
+import 'package:birdie/shared/globalcolors.dart';
 import 'package:birdie/home/home.dart';
+import 'package:birdie/shared/forms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -16,13 +17,18 @@ class LogInForm extends StatefulWidget {
 class _LogInFormState extends State<LogInForm> {
   final Key _formKey = GlobalKey<_LogInFormState>();
 
+  // final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _usernameController = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Center(
             child: Column(children: [
-          FormBuilder(
+          Form(
               key: _formKey,
               autovalidateMode: AutovalidateMode.always,
               child: Column(
@@ -47,54 +53,9 @@ class _LogInFormState extends State<LogInForm> {
                   const SizedBox(
                     height: 20,
                   ),
-                  Container(
-                    // USERNAME
-                    padding: const EdgeInsets.all(10),
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    child: FormBuilderTextField(
-                      textInputAction: TextInputAction.next,
-                      autofocus: false,
-                      keyboardType: TextInputType.emailAddress,
-                      name: 'email',
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.person,
-                          color: GlobalColors.purple,
-                        ),
-                        isDense: true,
-                        labelText: 'Email',
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: GlobalColors.purple)
-
-                            //    TODO: change input field border color
-
-                            ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    // USERNAME
-                    padding: const EdgeInsets.all(10),
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    child: FormBuilderTextField(
-                      textInputAction: TextInputAction.next,
-                      name: 'password',
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.lock_outlined,
-                          color: GlobalColors.purple,
-                        ),
-                        isDense: true,
-                        labelText: 'Password',
-                        border: OutlineInputBorder(
-                            borderSide: BorderSide(color: GlobalColors.purple)
-
-                            //    TODO: change input field border color
-
-                            ),
-                      ),
-                    ),
-                  ),
+                  
+                  UsernameTextField(controller: _usernameController),
+                  PasswordTextField(controller: _passwordController),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
@@ -105,7 +66,7 @@ class _LogInFormState extends State<LogInForm> {
                           PageTransition(
                               alignment: Alignment.topLeft,
                               type: PageTransitionType.rightToLeftWithFade,
-                              child: const Home()));
+                              child: Home(username: _usernameController.text)));
                     },
                     //TODO: insert input validation dialog
 

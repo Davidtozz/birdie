@@ -1,4 +1,4 @@
-import 'package:birdie/globalcolors.dart';
+import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:birdie/home/home.dart';
 import 'package:flutter_svg/svg.dart';
@@ -147,7 +147,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       onDonePress: () => Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => const Home(),
+          builder: (_) => const SignUpForm(),
         ),
       ),
     );

@@ -1,7 +1,0 @@
-POST  http://localhost:3000/api/register
-
-{
-    "email": "davidtozz@acchiappa.com",
-    "psw": "12345678",
-    "username": "David",
-}
