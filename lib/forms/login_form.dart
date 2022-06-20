@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
 
@@ -169,7 +170,16 @@ class _LogInFormState extends State<LogInForm> {
               margin: const EdgeInsets.only(top: 20),
               child: Visibility(
                 visible: _isLoading,
-                child: const CircularProgressIndicator(),
+                child: const SizedBox(
+                  width: 100,
+                  height: 100,
+                  child:  LoadingIndicator(
+                    indicatorType: Indicator.ballClipRotateMultiple,
+                    colors: [GlobalColors.purple],
+                    strokeWidth: 5.0,
+                    // backgroundColor: GlobalColors.purple,
+                  ),
+                ),
               ),
             )
           ]),

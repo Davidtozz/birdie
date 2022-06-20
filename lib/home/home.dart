@@ -231,6 +231,12 @@ class AboutAppTile extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                Text('Follow me on:',
+                                    style: GoogleFonts.roboto(
+                                        fontSize: 15,
+                                        color: GlobalColors.black,
+                                        fontWeight: FontWeight.w500)),
+                                        const SizedBox(width: 15),
                                 GestureDetector(
                                   onTap: () async {
                                     var url =

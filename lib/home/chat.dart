@@ -3,6 +3,7 @@ import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Chat extends StatefulWidget {
@@ -30,20 +31,23 @@ class _ChatState extends State<Chat> {
     super.dispose();
   }
 
-  final _fbKey = GlobalKey<FormState>();
   String label = "Write something...";
-  final defaultChatBackgrounds = [
-    'assets/chat_bg/moonlight.png',
-    'assets/chat_bg/purple_saturn.jpg',
-    'assets/chat_bg/sunset.png',
-  ];
+  // final defaultChatBackgrounds = [
+  //   'assets/chat_bg/moonlight.png',
+  //   'assets/chat_bg/purple_saturn.jpg',
+  //   'assets/chat_bg/sunset.png',
+  // ];
   var bottomTextBoxController = TextEditingController();
-  String message = "";
-  List<String> myMessages = [], receivedMessages = [];
+
+  List<String> myMessages = [],
+      receivedMessages = []; //TODO implement SOCKET IO to get messages
+
+  late Future fetchMessages;
 
   @override
   void initState() {
     // TODO: implement initState
+    fetchMessages = getMessagesFromAPI();
     getMessagesFromAPI();
     super.initState();
   }
@@ -73,10 +77,9 @@ class _ChatState extends State<Chat> {
     if (request.statusCode == 200) {
       setState(() {
         for (var i = 0; i < response.length; i++) {
-        
           myMessages.add(response[i]['content']);
-       
-      } });
+        }
+      });
 
       debugPrint(myMessages.toString());
     } else {
@@ -87,7 +90,6 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       extendBody: true,
       appBar: AppBar(
         backgroundColor: GlobalColors.purple,
@@ -108,81 +110,99 @@ class _ChatState extends State<Chat> {
           ],
         ),
       ),
-      body: Stack(children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: ListView.builder(
-              shrinkWrap: true,
-              reverse: false,
-              itemBuilder: ((context, index) {
-                return Message(
-                  messageBody: myMessages[index],
-                  isSender: true,
-                );
-              }),
-              itemCount: myMessages.length + receivedMessages.length),
-        ),
-        Positioned(
-          bottom: 15,
-          left: 15,
-          right: 15,
-          child: PhysicalModel(
-            borderRadius: BorderRadius.circular(50),
-            color: Colors.black,
-            elevation: 5.0,
-            child: TextField(
-              // focusNode: FocusNode(canRequestFocus: true),
-              controller: bottomTextBoxController,
-              onSubmitted: (value) {
-                if (value.isEmpty) {
-                  return;
-                } else {
-                  setState(() {
-                    label = "Write something...";
-
-                    message = value;
-                    value = "";
-                    myMessages.add(message);
-                    postMessageToAPI(message);
-                  });
-                }
-                bottomTextBoxController.clear();
-              },
-              // key: _fbKey,
-
-              decoration: InputDecoration(
-                floatingLabelBehavior: FloatingLabelBehavior.never,
-                suffixIcon: IconButton(
-                    // ! Button to send message
-                    onPressed: () {
-                      
-                        setState(() {
-                          myMessages.add(bottomTextBoxController.text);
-                          label = 'Write something...';
-                          postMessageToAPI(bottomTextBoxController.text);
-                          bottomTextBoxController.clear();
-                        });
-                    }, //TODO: implement sendMessage(),
-                    icon: const Icon(Icons.send)),
-
-                labelText: label,
-
-                filled: true,
-                fillColor: Colors.grey[300],
-                border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                  borderSide: BorderSide.none,
-                ),
-                //  labelText: 'Type a message...',
-                labelStyle: GoogleFonts.roboto(
-                  fontSize: 15,
-                  color: Colors.grey,
+      body: FutureBuilder(
+        future: fetchMessages,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: SizedBox(
+                width: 150,
+                height: 150,
+                child: LoadingIndicator(
+                  indicatorType: Indicator.ballClipRotateMultiple,
+                  colors: [GlobalColors.purple],
+                  strokeWidth: 5.0,
+                  // backgroundColor: GlobalColors.purple,
                 ),
               ),
+            );
+          } else {
+            return Stack(children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height,
+              child: ListView.builder(
+                  shrinkWrap: true,
+                  reverse: false,
+                  itemBuilder: ((context, index) {
+                    return Message(
+                      messageBody: myMessages[index],
+                      isSender: true,
+                    );
+                  }),
+                  itemCount: myMessages.length + receivedMessages.length),
             ),
-          ),
-        )
-      ]),
+            Positioned(
+              bottom: 15,
+              left: 15,
+              right: 15,
+              child: PhysicalModel(
+                borderRadius: BorderRadius.circular(50),
+                color: Colors.black,
+                elevation: 5.0,
+                child: TextField(
+                  // focusNode: FocusNode(canRequestFocus: true),
+                  controller: bottomTextBoxController,
+                  onSubmitted: (value) {
+                    if (value.isEmpty) {
+                      return;
+                    } else {
+                      setState(() {
+                        label = "Write something...";
+                        myMessages.add(value);
+                        postMessageToAPI(value);
+                        value = "";
+                      });
+                    }
+                    bottomTextBoxController.clear();
+                  },
+                  // key: _fbKey,
+
+                  decoration: InputDecoration(
+                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                    suffixIcon: IconButton(
+                        // ! Button to send message
+                        onPressed: () {
+                          setState(() {
+                            myMessages.add(bottomTextBoxController.text);
+                            label = 'Write something...';
+                            postMessageToAPI(bottomTextBoxController.text);
+                            bottomTextBoxController.clear();
+                          });
+                        }, //TODO: implement sendMessage(),
+                        icon: const Icon(Icons.send)),
+
+                    labelText: label,
+
+                    filled: true,
+                    fillColor: Colors.grey[300],
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      borderSide: BorderSide.none,
+                    ),
+                    //  labelText: 'Type a message...',
+                    labelStyle: GoogleFonts.roboto(
+                      fontSize: 15,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ]);
+          }
+          
+        },
+      ),
     );
   }
 }

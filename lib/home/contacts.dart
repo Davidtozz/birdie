@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
 import 'chat.dart';
@@ -76,21 +77,15 @@ class _ContactsState extends State<Contacts> {
         future: fetchFromAWS,
         builder: ((context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(
-                    color: GlobalColors.purple,
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Loading...',
-                    style: GoogleFonts.roboto(
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
+            return const Center(
+              child: SizedBox(
+                height: 150,
+                width: 150,
+                child: LoadingIndicator(
+                indicatorType: Indicator.ballClipRotateMultiple,
+                colors: [GlobalColors.purple],
+                strokeWidth: 5.0,
+                ),
               ),
             );
           } 
