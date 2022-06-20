@@ -12,6 +12,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:birdie/shared/avatar.dart';
 import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key, required this.username}) : super(key: key);
@@ -76,18 +78,12 @@ class _HomeState extends State<Home> {
                           maxHeight: MediaQuery.of(context).size.height * 0.5,
                         ),
                         child: ListView(
-                          children: const [
-                            AboutAppTile()
-                           
-                          ],
+                          children: const [AboutAppTile()],
                         ),
                       ),
                     ),
                   ],
-                )
-
-                
-                ),
+                )),
             appBar: AppBar(
               systemOverlayStyle: const SystemUiOverlayStyle(
                 statusBarColor: Colors.transparent,
@@ -101,8 +97,8 @@ class _HomeState extends State<Home> {
             ),
             body: PageView(physics: const BouncingScrollPhysics(), children: [
               Contacts(userName: widget.username),
-            ]) 
-            
+            ])
+
             //screens[bottomNavigationIndex],
             // bottomNavigationBar: NavigationBarTheme(
             //   data: const NavigationBarThemeData(
@@ -234,18 +230,35 @@ class AboutAppTile extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,
-                              children: const [
-                                FaIcon(
-                                  FontAwesomeIcons.linkedin,
-                                  color: Color(0xFF0A66C2),
-                                  size: 35,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    var url =
+                                        'https://www.linkedin.com/in/davide-pulvirenti/';
+                                    // await launchUrl(Uri.parse(url));
+
+                                    if (await canLaunchUrl(Uri.parse(url)) ==
+                                        true) {
+                                      debugPrint('launching url');
+                                      launchUrl(Uri.parse(url));
+                                    } else {
+                                      debugPrint('Could not launch $url');
+                                    }
+                                  },
+                                  child: const FaIcon(
+                                    FontAwesomeIcons.linkedin,
+                                    color: Color(0xFF0A66C2),
+                                    size: 35,
+                                  ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 15,
                                 ),
-                                FaIcon(
-                                  FontAwesomeIcons.github,
-                                  size: 35,
+                                GestureDetector(
+                                  child: const FaIcon(
+                                    FontAwesomeIcons.github,
+                                    size: 35,
+                                  ),
                                 ),
                               ],
                             ))
@@ -316,48 +329,46 @@ class UserCard extends StatelessWidget {
                     topLeft: Radius.circular(20),
                     bottomLeft: Radius.circular(20),
                   ),
-    
+
                   border: Border.all(
                     color: Colors.white,
                     width: 2,
                   ),
                   // borderRadius: BorderRadius.circular(50),
                 ),
-                child: 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text('Log Out',
-                            style: GoogleFonts.roboto(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black,
-                            )),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text('Log Out',
+                          style: GoogleFonts.roboto(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          )),
+                    ),
+                    // const SizedBox(width: 5),
+                    IconButton(
+                      onPressed: () {
+                        //Navigate to Login page
+                        Navigator.pushReplacement(
+                            context,
+                            PageTransition(
+                                childCurrent: Home(username: username),
+                                child: const LogInForm(),
+                                type: PageTransitionType.topToBottomJoined));
+                      },
+                      icon: const FaIcon(
+                        FontAwesomeIcons.rightToBracket,
+                        color: Colors.black,
                       ),
-                      // const SizedBox(width: 5),
-                      IconButton(
-                        onPressed: () {
-                          //Navigate to Login page
-                          Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                  childCurrent: Home(username: username),
-                                  child: const LogInForm(),
-                                  type: PageTransitionType.topToBottomJoined));
-                        },
-                        icon: const FaIcon(
-                          FontAwesomeIcons.rightToBracket,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            
+            ),
           ],
         ),
       ),

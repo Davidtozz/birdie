@@ -1,0 +1,1 @@
+// TODO: implement status page (like Whatsapp) and add it to the app

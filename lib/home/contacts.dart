@@ -13,7 +13,7 @@ class Contacts extends StatefulWidget {
   const Contacts({Key? key, required this.userName}) : super(key: key);
 
   final String userName;
- 
+
   // static fetchData() async {}
 
   @override
@@ -23,12 +23,15 @@ class Contacts extends StatefulWidget {
 class _ContactsState extends State<Contacts> {
   final listViewBuilderKey = UniqueKey();
 
+
+
   late Future fetchFromAWS;
   var dialogContactNameController = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
+
     name.clear();
     fetchFromAWS = fetchData();
 
@@ -57,7 +60,9 @@ class _ContactsState extends State<Contacts> {
 
         }
         debugPrint('\nResponse body: ${response.toString()}');
-        debugPrint('Contact list content: ${name.toString()}');
+        // debugPrint('Contact list content: ${name.toString()}');
+         debugPrint(
+                'Found ${name.length} contacts for user ${widget.userName}');
       }
 
       if (name.last != response[response.length - 1]['name']) {
@@ -88,44 +93,9 @@ class _ContactsState extends State<Contacts> {
                 ],
               ),
             );
-          } //else if (snapshot.hasData) {
-          // return Center(
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       Text(
-          //         'No contacts found',
-          //         style: GoogleFonts.roboto(
-          //           fontSize: 20,
-          //           fontWeight: FontWeight.w500,
-          //           color: GlobalColors.purple,
-          //         ),
-          //       ),
-          //       ElevatedButton(
-          //         onPressed: (() => setState(() {
-          //               name.clear();
-          //               fetchFromAWS = fetchData();
-          //             })),
-          //         style: ButtonStyle(
-          //           backgroundColor:
-          //               MaterialStateProperty.all(GlobalColors.purple),
-          //           foregroundColor: MaterialStateProperty.all(Colors.white),
-          //         ),
-          //         child: Text(
-          //           'Retry',
-          //           style: GoogleFonts.roboto(
-          //             fontSize: 20,
-          //             fontWeight: FontWeight.w500,
-          //             color: Colors.white,
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // );
+          } 
+         
           else {
-            debugPrint('Found ${name.length} contacts for user ${widget.userName}');
-
             return Scaffold(
                 body: name.isEmpty
                     ? Center(
@@ -152,108 +122,100 @@ class _ContactsState extends State<Contacts> {
                           ],
                         ),
                       )
-                    : Scrollbar(
-                        interactive: true,
-                        thumbVisibility: true,
-                        child: ListView.builder(
-                          key: listViewBuilderKey,
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: name
-                              .length, // ! itemCount is known by the amount of contacts present in the DB
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                                onLongPress: () => showDialog(
-                                    //? Delete contact
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                            title: const Text("Delete contact"),
-                                            content: Text(
-                                                "Are you sure you want to delete ${name[index]}?"),
-                                            actions: <Widget>[
-                                              TextButton(
-                                                child: const Text("Cancel"),
+                    : ListView.builder(
+                        
+                        itemCount: name.length, // ! itemCount is known by the amount of contacts present in the DB
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                              onLongPress: () => showDialog(
+                                  //? Delete contact
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                          title: const Text("Delete contact"),
+                                          content: Text(
+                                              "Are you sure you want to delete ${name[index]}?"),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: const Text("Cancel"),
+                                              onPressed: () {
+                                                // ? nothing happens if the user cancels
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                                // ! deletes the contact if the user confirms
+                                                child: const Text("Delete"),
                                                 onPressed: () {
-                                                  // ? nothing happens if the user cancels
+                                                  //delete the contact
+                                                  http
+                                                      .delete(Uri.parse(
+                                                              // 'localhost:5000/api/deletecontact'),
+                                                              'https://birdie-auth-testing.herokuapp.com/api/deletecontact'), //! API HEROKU URL
+                                                          headers: {
+                                                            'Content-Type':
+                                                                'application/json'
+                                                          },
+                                                          body: json.encode({
+                                                            'name': name[index]
+                                                          }))
+                                                      .then((value) {
+                                                    if (value.statusCode ==
+                                                        200) {
+                                                      setState(() {
+                                                        name.removeAt(index);
+                                                      });
+                                                    } else {
+                                                      debugPrint(
+                                                          'Error deleting contact');
+                                                    }
+                                                  });
                                                   Navigator.of(context).pop();
-                                                },
-                                              ),
-                                              TextButton(
-                                                  // ! deletes the contact if the user confirms
-                                                  child: const Text("Delete"),
-                                                  onPressed: () {
-                                                    //delete the contact
-                                                    http
-                                                        .delete(Uri.parse(
-                                                                // 'localhost:5000/api/deletecontact'),
-                                                                'https://birdie-auth-testing.herokuapp.com/api/deletecontact'), //! API HEROKU URL
-                                                            headers: {
-                                                              'Content-Type':
-                                                                  'application/json'
-                                                            },
-                                                            body: json.encode({
-                                                              'name':
-                                                                  name[index]
-                                                            }))
-                                                        .then((value) {
-                                                      if (value.statusCode ==
-                                                          200) {
-                                                        setState(() {
-                                                          name.removeAt(index);
-                                                        });
-                                                      } else {
-                                                        debugPrint(
-                                                            'Error deleting contact');
-                                                      }
-                                                    });
-                                                    Navigator.of(context).pop();
-                                                    //remove the contact from the list
-                                                    name.removeAt(index);
-                                                    setState(() {
-                                                      fetchFromAWS =
-                                                          fetchData();
-                                                    });
-                                                  })
-                                            ])),
-                                child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: GlobalColors.purple,
-                                      child: Text(
-                                        name.isEmpty
-                                            ? 'A'
-                                            : name[index][0].toUpperCase(),
-                                        // ! if contact isn't saved with a name, show his number instead
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                        ),
+                                                  //remove the contact from the list
+                                                  name.removeAt(index);
+                                                  setState(() {
+                                                    fetchFromAWS = fetchData();
+                                                  });
+                                                })
+                                          ])),
+                              child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: GlobalColors.purple,
+                                    child: Text(
+                                      name.isEmpty
+                                          ? 'A'
+                                          : name[index][0].toUpperCase(),
+                                      // ! if contact isn't saved with a name, show his number instead
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 20,
                                       ),
                                     ),
-                                    title: Text(name[index],
-                                        style: GoogleFonts.roboto()),
-                                    subtitle: Text(lastMessageSent,
-                                        style: GoogleFonts.roboto()),
-                                    onTap: () {
-                                      //show dialog
-                                      Navigator.push(
-                                          context,
-                                          PageTransition(
-                                              alignment: Alignment.center,
-                                              // duration: const Duration(milliseconds: 300),
-                                              // reverseDuration: const Duration(milliseconds: 200),
-                                              type: PageTransitionType.fade,
-                                              child: Chat(
-                                                contactName: name[
-                                                    index], // ! pass contact name to Chat widget
-                                                // ! pass contact number to Chat widget
-                                                lastOnline:
-                                                    lastOnline, // ! pass contact last online to Chat widget
-                                              )));
-                                    }));
-
-                            // );
-                          },
-                        ),
+                                  ),
+                                  title: Text(name[index],
+                                      style: GoogleFonts.roboto()),
+                                  subtitle: Text(lastMessageSent,
+                                      style: GoogleFonts.roboto()),
+                                  onTap: () {
+                                    //show dialog
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            alignment: Alignment.center,
+                                            // duration: const Duration(milliseconds: 300),
+                                            // reverseDuration: const Duration(milliseconds: 200),
+                                            type: PageTransitionType.fade,
+                                            child: Chat(
+                                              userName: widget.userName,
+                                              contactName: name[index], // ! pass contact name to Chat widget
+                                              // ! pass contact number to Chat widget
+                                              lastOnline:
+                                                  lastOnline, // ! pass contact last online to Chat widget
+                                            )));
+                                  }));
+                    
+                          // );
+                        },
                       ),
                 floatingActionButton: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -289,10 +251,9 @@ class _ContactsState extends State<Contacts> {
                             content: SizedBox(
                               child: TextField(
                                 onSubmitted: (value) {
-                                  
-
                                   http.post(
-                                      Uri.parse('https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/addcontact'),
+                                      Uri.parse(
+                                          'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/addcontact'),
                                       headers: {
                                         'Content-Type': 'application/json'
                                       },

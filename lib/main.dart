@@ -45,7 +45,10 @@ class _MyAppState extends State<MyApp> {
         title: 'Birdie',
         // visualDensity: VisualDensity.adaptivePlatformDensity,
         debugShowCheckedModeBanner: false,
-        home: _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
+        home: 
+        // Home(username: 'davidtozz',)
+        
+        _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
         
         // Test()
 

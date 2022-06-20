@@ -1,20 +1,20 @@
 import 'dart:convert';
-
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Chat extends StatefulWidget {
-  final String contactName, lastOnline;
-  final String? number;
+  final String contactName, userName;
+  final String? number, lastOnline;
   //  pathToContactImage; //todo: implement pathToContactImage via DB or server
 
   const Chat(
       {Key? key,
       required this.contactName,
-      required this.lastOnline,
+      required this.userName,
+      this.lastOnline,
       this.number})
       : super(key: key);
 
@@ -30,14 +30,14 @@ class _ChatState extends State<Chat> {
     super.dispose();
   }
 
-  final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
+  final _fbKey = GlobalKey<FormState>();
   String label = "Write something...";
   final defaultChatBackgrounds = [
     'assets/chat_bg/moonlight.png',
     'assets/chat_bg/purple_saturn.jpg',
     'assets/chat_bg/sunset.png',
   ];
-  TextEditingController bottomTextBoxController = TextEditingController();
+  var bottomTextBoxController = TextEditingController();
   String message = "";
   List<String> myMessages = [], receivedMessages = [];
 
@@ -50,9 +50,9 @@ class _ChatState extends State<Chat> {
 
   //post message to server using http
   void postMessageToAPI(String msg) async {
-    var url = 
-    // 'localhost:5000/api/postmessages';
-    'https://birdie-auth-testing.herokuapp.com/api/postmessages'; // ! API HEROKU URL
+    var url =
+        // 'localhost:5000/api/postmessages';
+        'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/${widget.contactName}/message'; // ! API HEROKU URL
     await http.post(Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
@@ -63,20 +63,20 @@ class _ChatState extends State<Chat> {
 
   Future<void> getMessagesFromAPI() async {
     var request = await http.get(Uri.parse(
-      // 'https//localhost:5000/api/getmessages',
-        'https://birdie-auth-testing.herokuapp.com/api/getmessages'
-        )); // ! sostituire "localhost" con "localhost"
+        // 'https//localhost:5000/api/getmessages',
+        'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/${widget.contactName}/messages')); // ! sostituire "localhost" con "localhost"
 
     var response = json.decode(request.body);
 
     //for each message in response, add it to a list
 
     if (request.statusCode == 200) {
-      for (var i = 0; i < response.length; i++) {
-        setState(() {
+      setState(() {
+        for (var i = 0; i < response.length; i++) {
+        
           myMessages.add(response[i]['content']);
-        });
-      }
+       
+      } });
 
       debugPrint(myMessages.toString());
     } else {
@@ -87,152 +87,170 @@ class _ChatState extends State<Chat> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: GlobalColors.purple,
         elevation: 5.0,
         // backgroundColor: GlobalColors.purple,
-        title: topContactInfo(),
+        title: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.contactName,
+            ),
+            Text(
+              'Last seen ${widget.lastOnline}',
+              style: GoogleFonts.roboto(fontSize: 15),
+            ),
+          ],
+        ),
       ),
       body: Stack(children: [
-        //*****************************************************************************************
-        Container(
-          // ! Background image
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              isAntiAlias: true,
-              image: AssetImage(defaultChatBackgrounds[0]),
-              fit: BoxFit.cover,
-            ),
-          ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height,
+          child: ListView.builder(
+              shrinkWrap: true,
+              reverse: false,
+              itemBuilder: ((context, index) {
+                return Message(
+                  messageBody: myMessages[index],
+                  isSender: true,
+                );
+              }),
+              itemCount: myMessages.length + receivedMessages.length),
         ),
-        //*****************************************************************************************
-
-        ListView.builder(
-            shrinkWrap: true,
-            reverse: false,
-            itemBuilder: ((context, index) {
-              return Message(
-                // ? TODO: Before adding a message, check if it is a message from me or someone else
-                messageBody: myMessages[index],
-              );
-            }),
-            itemCount: myMessages.length + receivedMessages.length),
-        //*****************************************************************************************
-
-        // ! TextField per i messaggi
-
-        //*****************************************************************************************
-      ]),
-      bottomSheet: FormBuilderTextField(
-        focusNode: FocusNode(canRequestFocus: true),
-        controller: bottomTextBoxController,
-        onSubmitted: (value) {
-          if (value!.isEmpty) {
-            return;
-          } else {
-            postMessageToAPI(value);
-            setState(() {
-              label = "Write something...";
-
-              message = value!;
-              value = "";
-              myMessages.add(message);
-            });
-          }
-          bottomTextBoxController.clear();
-        },
-        key: _fbKey,
-        name: 'message',
-        decoration: InputDecoration(
-          floatingLabelBehavior: FloatingLabelBehavior.never,
-          suffixIcon: IconButton(
-              // ! Button to send message
-              onPressed: () {
-                if (bottomTextBoxController.text.isEmpty) {
+        Positioned(
+          bottom: 15,
+          left: 15,
+          right: 15,
+          child: PhysicalModel(
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.black,
+            elevation: 5.0,
+            child: TextField(
+              // focusNode: FocusNode(canRequestFocus: true),
+              controller: bottomTextBoxController,
+              onSubmitted: (value) {
+                if (value.isEmpty) {
                   return;
                 } else {
-                  myMessages.add(bottomTextBoxController.text);
-
                   setState(() {
-                    label = 'Write something...';
+                    label = "Write something...";
+
+                    message = value;
+                    value = "";
+                    myMessages.add(message);
+                    postMessageToAPI(message);
                   });
                 }
-                postMessageToAPI(bottomTextBoxController.text);
                 bottomTextBoxController.clear();
-              }, //TODO: implement sendMessage(),
-              icon: const Icon(Icons.send)),
+              },
+              // key: _fbKey,
 
-          labelText: label,
+              decoration: InputDecoration(
+                floatingLabelBehavior: FloatingLabelBehavior.never,
+                suffixIcon: IconButton(
+                    // ! Button to send message
+                    onPressed: () {
+                      
+                        setState(() {
+                          myMessages.add(bottomTextBoxController.text);
+                          label = 'Write something...';
+                          postMessageToAPI(bottomTextBoxController.text);
+                          bottomTextBoxController.clear();
+                        });
+                    }, //TODO: implement sendMessage(),
+                    icon: const Icon(Icons.send)),
 
-          filled: true,
-          fillColor: Colors.white,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide.none,
+                labelText: label,
+
+                filled: true,
+                fillColor: Colors.grey[300],
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                  borderSide: BorderSide.none,
+                ),
+                //  labelText: 'Type a message...',
+                labelStyle: GoogleFonts.roboto(
+                  fontSize: 15,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
           ),
-          //  labelText: 'Type a message...',
-          labelStyle: GoogleFonts.roboto(
-            fontSize: 15,
-            color: Colors.grey,
-          ),
-        ),
-      ),
+        )
+      ]),
     );
   }
-
-  //****************************************************************************************
-  //! Extracted Widgets...
-
-  Column topContactInfo() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.contactName,
-        ),
-        Text(
-          'Last seen ${widget.lastOnline}',
-          style: GoogleFonts.roboto(fontSize: 15),
-        ),
-      ],
-    );
-  }
-
-  //****************************************************************************************
 }
 
 class Message extends StatelessWidget {
-  const Message({Key? key, required this.messageBody}) : super(key: key);
+  const Message({Key? key, required this.messageBody, required this.isSender})
+      : super(key: key);
 
   // factory Message.fromJson(Map<String, dynamic> json) => Message(
   //       messageBody: json['message'] as String,
   //     );
 
   final String messageBody;
+  final bool isSender;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(6.5, 0, 6.5, 0),
-      child: ListTile(
-        title: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          LimitedBox(
-            maxWidth: MediaQuery.of(context).size.width * 0.6,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                messageBody,
-                // maxLines: null,
-                style: GoogleFonts.roboto(fontSize: 17, color: Colors.black),
+    if (isSender == true) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(right: 10, top: 5),
+            decoration: const BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
               ),
             ),
-          )
-        ]),
-      ),
-    );
+            child: Text(
+              messageBody,
+              style: GoogleFonts.roboto(
+                fontSize: 15,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        // ! Row for received messages
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            margin: const EdgeInsets.only(left: 10),
+            decoration: const BoxDecoration(
+              color: GlobalColors.purple,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              ),
+            ),
+            child: Text(
+              messageBody,
+              style: GoogleFonts.roboto(
+                fontSize: 15,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
