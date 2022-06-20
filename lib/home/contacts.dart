@@ -9,10 +9,11 @@ import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
 import 'chat.dart';
 
-
 class Contacts extends StatefulWidget {
-  const Contacts({Key? key}) : super(key: key);
+  const Contacts({Key? key, required this.userName}) : super(key: key);
 
+  final String userName;
+ 
   // static fetchData() async {}
 
   @override
@@ -20,7 +21,7 @@ class Contacts extends StatefulWidget {
 }
 
 class _ContactsState extends State<Contacts> {
-  Key listViewBuilderKey = UniqueKey();
+  final listViewBuilderKey = UniqueKey();
 
   late Future fetchFromAWS;
   var dialogContactNameController = TextEditingController();
@@ -40,9 +41,11 @@ class _ContactsState extends State<Contacts> {
   String lastMessageSent = "Placeholder"; //todo: retrieve info from DB
 
   Future<void> fetchData() async {
+    debugPrint('Fetching user ${widget.userName} data');
+
     var request = await http.get(Uri.parse(
         //  'localhost:3000/api/getcontacts' // ! API HEROKU URL
-        'https://birdie-auth-testing.herokuapp.com/api/getcontacts'));
+        'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/getcontacts'));
     var response = json.decode(request.body);
 
     setState(() {
@@ -85,42 +88,44 @@ class _ContactsState extends State<Contacts> {
                 ],
               ),
             );
-          } else if (snapshot.hasData) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'No contacts found',
-                    style: GoogleFonts.roboto(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: GlobalColors.purple,
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: (() => setState(() {
-                          name.clear();
-                          fetchFromAWS = fetchData();
-                        })),
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(GlobalColors.purple),
-                      foregroundColor: MaterialStateProperty.all(Colors.white),
-                    ),
-                    child: Text(
-                      'Retry',
-                      style: GoogleFonts.roboto(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else {
+          } //else if (snapshot.hasData) {
+          // return Center(
+          //   child: Column(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       Text(
+          //         'No contacts found',
+          //         style: GoogleFonts.roboto(
+          //           fontSize: 20,
+          //           fontWeight: FontWeight.w500,
+          //           color: GlobalColors.purple,
+          //         ),
+          //       ),
+          //       ElevatedButton(
+          //         onPressed: (() => setState(() {
+          //               name.clear();
+          //               fetchFromAWS = fetchData();
+          //             })),
+          //         style: ButtonStyle(
+          //           backgroundColor:
+          //               MaterialStateProperty.all(GlobalColors.purple),
+          //           foregroundColor: MaterialStateProperty.all(Colors.white),
+          //         ),
+          //         child: Text(
+          //           'Retry',
+          //           style: GoogleFonts.roboto(
+          //             fontSize: 20,
+          //             fontWeight: FontWeight.w500,
+          //             color: Colors.white,
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // );
+          else {
+            debugPrint('Found ${name.length} contacts for user ${widget.userName}');
+
             return Scaffold(
                 body: name.isEmpty
                     ? Center(
@@ -132,12 +137,18 @@ class _ContactsState extends State<Contacts> {
                               height: 140,
                             ),
                             const SizedBox(height: 20),
-                            Text('Feeling lonely? Invite someone to your crib',
-                                style: GoogleFonts.roboto(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w400,
-                                  color: GlobalColors.black,
-                                )),
+                            Flexible(
+                              child: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.7,
+                                child: Text('I see nobody in here 😞',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.roboto(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400,
+                                      color: GlobalColors.black,
+                                    )),
+                              ),
+                            ),
                           ],
                         ),
                       )
@@ -172,8 +183,7 @@ class _ContactsState extends State<Contacts> {
                                                   onPressed: () {
                                                     //delete the contact
                                                     http
-                                                        .delete(
-                                                            Uri.parse(
+                                                        .delete(Uri.parse(
                                                                 // 'localhost:5000/api/deletecontact'),
                                                                 'https://birdie-auth-testing.herokuapp.com/api/deletecontact'), //! API HEROKU URL
                                                             headers: {
@@ -279,9 +289,10 @@ class _ContactsState extends State<Contacts> {
                             content: SizedBox(
                               child: TextField(
                                 onSubmitted: (value) {
+                                  
+
                                   http.post(
-                                      Uri.parse(
-                                          'https://birdie-auth-testing.herokuapp.com/api/addcontact'),
+                                      Uri.parse('https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/addcontact'),
                                       headers: {
                                         'Content-Type': 'application/json'
                                       },
@@ -314,7 +325,7 @@ class _ContactsState extends State<Contacts> {
                                 onPressed: () {
                                   http.post(
                                       Uri.parse(
-                                          'https://birdie-auth-testing.herokuapp.com/api/addcontact'),
+                                          'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/addcontact'),
                                       headers: {
                                         'Content-Type': 'application/json'
                                       },

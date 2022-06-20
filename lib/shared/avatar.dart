@@ -52,21 +52,31 @@ class _AvatarState extends State<Avatar> {
         alignment: AlignmentDirectional.bottomEnd,
         children: [
           CircleAvatar(
-            backgroundColor: Colors.transparent,
-            radius: 65,
-            child: avatarImage != null
-                ? ClipOval(
-                    child: Image.file(avatarImage as File,
-                        width: 130, height: 130, fit: BoxFit.cover))
-                : SvgPicture.asset(
-                    'assets/images/profilepic.svg',
-                    width: 130,
-                    height: 130,
-                  ),
+            radius: 66,
+            backgroundColor: Colors.black,
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              radius: 65,
+              child: avatarImage != null
+                  ? ClipOval(
+                      child: Image.file(avatarImage as File,
+                          width: 130, height: 130, fit: BoxFit.cover))
+                  : SvgPicture.asset(
+                      'assets/images/profilepic.svg',
+                      width: 130,
+                      height: 130,
+                    ),
+            ),
           ),
+          
           Positioned(
             child: Container(
+              
               decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.black,
+                  width: 2,
+                ),
                 color: Colors.blue,
                 borderRadius: BorderRadius.circular(50),
               ),

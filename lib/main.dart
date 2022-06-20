@@ -1,13 +1,15 @@
 import 'package:birdie/forms/login_form.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:is_first_run/is_first_run.dart';
 
+import 'home/home.dart';
 import 'introduction/intro_slider.dart';
 
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // GetIt.I.registerSingleton<IsFirstRun>(IsFirstRun());
   runApp(const MyApp());
 }
 
@@ -44,7 +46,7 @@ class _MyAppState extends State<MyApp> {
         // visualDensity: VisualDensity.adaptivePlatformDensity,
         debugShowCheckedModeBanner: false,
         home: _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
-        // Home(),
+        
         // Test()
 
        

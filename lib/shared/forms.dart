@@ -133,12 +133,12 @@ class UsernameTextField extends StatelessWidget {
         validator: (value) {
           value = controller.text;
 
-          if (value.length > 16) {
-            return 'Username must be less than 16 characters';
-          }
-
-          if (value.contains(RegExp(r'[^a-z]'))) {
+          if (value.length > 10) {
+            return 'Username must be less than 10 characters';
+          } else if (value.contains(RegExp(r'[^a-z]'))) {
             return 'Username must be lowercase';
+          }else if(value.contains(' ')){
+            return 'Username cannot contain spaces';
           }
           return null;
         },
