@@ -1,4 +1,9 @@
-# Birdie - A Simple yet complex texting application. 
+# Birdie
 
-This is my first Flutter application which can be considered as such. In the current state of the application, Many of the required features of a texting app such as Telegram or Whatsapp are still missing and hopefully will be implemented in the future.  
+Birdie is a Fullstack instant messaging application, made by me while learning Flutter. 
 
+## Tech stack
+
+- **Frontend**: Flutter
+- **API**: ExpressJS, hosted on Heroku PaaS
+- **Backend**:  AWS RDS (MySQL)
