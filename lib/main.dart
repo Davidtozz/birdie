@@ -1,16 +1,18 @@
 import 'package:birdie/forms/login_form.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:is_first_run/is_first_run.dart';
-
-import 'home/home.dart';
 import 'introduction/intro_slider.dart';
-
+import 'package:provider/provider.dart';
+//import provider
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   // GetIt.I.registerSingleton<IsFirstRun>(IsFirstRun());
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(providers: [
+      Provider(create: (_) => IsFirstRun()),
+    ], child: const MyApp()),
+    );
 }
 
 class MyApp extends StatefulWidget {
@@ -37,6 +39,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _checkFirstRun();
   }
+  
 
   @override
   Widget build(BuildContext context) {

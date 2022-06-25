@@ -75,6 +75,7 @@ class _ChatState extends State<Chat> {
     //for each message in response, add it to a list
 
     if (request.statusCode == 200) {
+      myMessages.clear();
       setState(() {
         for (var i = 0; i < response.length; i++) {
           myMessages.add(response[i]['content']);
@@ -86,6 +87,9 @@ class _ChatState extends State<Chat> {
       debugPrint("Error: ${request.statusCode}");
     }
   }
+
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -128,79 +132,78 @@ class _ChatState extends State<Chat> {
             );
           } else {
             return Stack(children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  reverse: false,
-                  itemBuilder: ((context, index) {
-                    return Message(
-                      messageBody: myMessages[index],
-                      isSender: true,
-                    );
-                  }),
-                  itemCount: myMessages.length + receivedMessages.length),
-            ),
-            Positioned(
-              bottom: 15,
-              left: 15,
-              right: 15,
-              child: PhysicalModel(
-                borderRadius: BorderRadius.circular(50),
-                color: Colors.black,
-                elevation: 5.0,
-                child: TextField(
-                  // focusNode: FocusNode(canRequestFocus: true),
-                  controller: bottomTextBoxController,
-                  onSubmitted: (value) {
-                    if (value.isEmpty) {
-                      return;
-                    } else {
-                      setState(() {
-                        label = "Write something...";
-                        myMessages.add(value);
-                        postMessageToAPI(value);
-                        value = "";
-                      });
-                    }
-                    bottomTextBoxController.clear();
-                  },
-                  // key: _fbKey,
+              SizedBox(
+                height: MediaQuery.of(context).size.height,
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    reverse: false,
+                    itemBuilder: ((context, index) {
+                      return Message(
+                        messageBody: myMessages[index],
+                        isSender: true,
+                      );
+                    }),
+                    itemCount: myMessages.length + receivedMessages.length),
+              ),
+              Positioned(
+                bottom: 15,
+                left: 15,
+                right: 15,
+                child: PhysicalModel(
+                  borderRadius: BorderRadius.circular(50),
+                  color: Colors.black,
+                  elevation: 5.0,
+                  child: TextField(
+                    // focusNode: FocusNode(canRequestFocus: true),
+                    controller: bottomTextBoxController,
+                    onSubmitted: (value) {
+                      if (value.isEmpty) {
+                        return;
+                      } else {
+                        setState(() {
+                          label = "Write something...";
+                          myMessages.add(value);
+                          postMessageToAPI(value);
+                          value = "";
+                        });
+                      }
+                      bottomTextBoxController.clear();
+                    },
+                    // key: _fbKey,
 
-                  decoration: InputDecoration(
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
-                    suffixIcon: IconButton(
-                        // ! Button to send message
-                        onPressed: () {
-                          setState(() {
-                            myMessages.add(bottomTextBoxController.text);
-                            label = 'Write something...';
-                            postMessageToAPI(bottomTextBoxController.text);
-                            bottomTextBoxController.clear();
-                          });
-                        }, //TODO: implement sendMessage(),
-                        icon: const Icon(Icons.send)),
+                    decoration: InputDecoration(
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                      suffixIcon: IconButton(
+                          // ! Button to send message
+                          onPressed: () {
+                            setState(() {
+                              myMessages.add(bottomTextBoxController.text);
+                              label = 'Write something...';
+                              postMessageToAPI(bottomTextBoxController.text);
+                              bottomTextBoxController.clear();
+                            });
+                          }, //TODO: implement sendMessage(),
+                          icon: const Icon(Icons.send)),
 
-                    labelText: label,
+                      labelText: label,
 
-                    filled: true,
-                    fillColor: Colors.grey[300],
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      borderSide: BorderSide.none,
-                    ),
-                    //  labelText: 'Type a message...',
-                    labelStyle: GoogleFonts.roboto(
-                      fontSize: 15,
-                      color: Colors.grey,
+                      filled: true,
+                      fillColor: Colors.grey[300],
+                      border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderSide: BorderSide.none,
+                      ),
+                      //  labelText: 'Type a message...',
+                      labelStyle: GoogleFonts.roboto(
+                        fontSize: 15,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            )
-          ]);
+              )
+            ]);
           }
-          
         },
       ),
     );

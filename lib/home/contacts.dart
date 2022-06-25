@@ -24,8 +24,6 @@ class Contacts extends StatefulWidget {
 class _ContactsState extends State<Contacts> {
   final listViewBuilderKey = UniqueKey();
 
-
-
   late Future fetchFromAWS;
   var dialogContactNameController = TextEditingController();
 
@@ -42,7 +40,7 @@ class _ContactsState extends State<Contacts> {
   List<String> name = [], number = []; // ! Info achieeved from server
 
   String lastOnline = '15:16'; //todo: retrieve info from DB
-  String lastMessageSent = "Placeholder"; //todo: retrieve info from DB
+  List<String> lastMessageSent = []; //todo: retrieve info from DB
 
   Future<void> fetchData() async {
     debugPrint('Fetching user ${widget.userName} data');
@@ -54,20 +52,43 @@ class _ContactsState extends State<Contacts> {
 
     setState(() {
       name.clear();
+      // lastMessageSent.clear();
       if (name.isEmpty && number.isEmpty) {
         for (var i = 0; i < response.length; i++) {
           name.add(response[i]['name']);
+          lastMessageSent.add(response[i]['content']);
           // number.add(response[i]['phone'].toString());
 
         }
         debugPrint('\nResponse body: ${response.toString()}');
-        // debugPrint('Contact list content: ${name.toString()}');
-         debugPrint(
-                'Found ${name.length} contacts for user ${widget.userName}');
+        // debugPrint('Recent messages: ${name.toString()}');
+        debugPrint('Found ${name.length} contacts for user ${widget.userName}');
       }
 
       if (name.last != response[response.length - 1]['name']) {
         name.add(response[response.length - 1]['name']);
+      }
+    });
+  }
+
+  Future<void> deleteContact({required String contactName}) async {
+    var url =
+        'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/deletecontact';
+
+    var chosenContact = json.encode({'name': contactName});
+
+    await http
+        .delete(Uri.parse(url),
+            headers: {'Content-Type': 'application/json'}, body: chosenContact)
+        .then((value) {
+      if (value.statusCode == 200) {
+        debugPrint('Deleted contact: $contactName');
+        setState(() {
+          debugPrint('$name before');
+          name.remove(contactName);
+          debugPrint('$name after');
+          fetchFromAWS = fetchData();
+        });
       }
     });
   }
@@ -82,15 +103,13 @@ class _ContactsState extends State<Contacts> {
                 height: 150,
                 width: 150,
                 child: LoadingIndicator(
-                indicatorType: Indicator.ballClipRotateMultiple,
-                colors: [GlobalColors.purple],
-                strokeWidth: 5.0,
+                  indicatorType: Indicator.ballClipRotateMultiple,
+                  colors: [GlobalColors.purple],
+                  strokeWidth: 5.0,
                 ),
               ),
             );
-          } 
-         
-          else {
+          } else {
             return Scaffold(
                 body: name.isEmpty
                     ? Center(
@@ -118,8 +137,8 @@ class _ContactsState extends State<Contacts> {
                         ),
                       )
                     : ListView.builder(
-                        
-                        itemCount: name.length, // ! itemCount is known by the amount of contacts present in the DB
+                        itemCount: name
+                            .length, // ! itemCount is known by the amount of contacts present in the DB
                         itemBuilder: (context, index) {
                           return GestureDetector(
                               onLongPress: () => showDialog(
@@ -142,34 +161,10 @@ class _ContactsState extends State<Contacts> {
                                                 child: const Text("Delete"),
                                                 onPressed: () {
                                                   //delete the contact
-                                                  http
-                                                      .delete(Uri.parse(
-                                                              // 'localhost:5000/api/deletecontact'),
-                                                              'https://birdie-auth-testing.herokuapp.com/api/deletecontact'), //! API HEROKU URL
-                                                          headers: {
-                                                            'Content-Type':
-                                                                'application/json'
-                                                          },
-                                                          body: json.encode({
-                                                            'name': name[index]
-                                                          }))
-                                                      .then((value) {
-                                                    if (value.statusCode ==
-                                                        200) {
-                                                      setState(() {
-                                                        name.removeAt(index);
-                                                      });
-                                                    } else {
-                                                      debugPrint(
-                                                          'Error deleting contact');
-                                                    }
-                                                  });
+
+                                                  deleteContact(
+                                                      contactName: name[index]);
                                                   Navigator.of(context).pop();
-                                                  //remove the contact from the list
-                                                  name.removeAt(index);
-                                                  setState(() {
-                                                    fetchFromAWS = fetchData();
-                                                  });
                                                 })
                                           ])),
                               child: ListTile(
@@ -189,8 +184,13 @@ class _ContactsState extends State<Contacts> {
                                   ),
                                   title: Text(name[index],
                                       style: GoogleFonts.roboto()),
-                                  subtitle: Text(lastMessageSent,
-                                      style: GoogleFonts.roboto()),
+                                  subtitle: Row(
+                                    children: [
+                                      Text('Last: ',
+                                          style: GoogleFonts.roboto(fontWeight: FontWeight.w900)),
+                                      Text(lastMessageSent[index], style: GoogleFonts.roboto())
+                                    ],
+                                  ),
                                   onTap: () {
                                     //show dialog
                                     Navigator.push(
@@ -202,13 +202,14 @@ class _ContactsState extends State<Contacts> {
                                             type: PageTransitionType.fade,
                                             child: Chat(
                                               userName: widget.userName,
-                                              contactName: name[index], // ! pass contact name to Chat widget
+                                              contactName: name[
+                                                  index], // ! pass contact name to Chat widget
                                               // ! pass contact number to Chat widget
                                               lastOnline:
                                                   lastOnline, // ! pass contact last online to Chat widget
                                             )));
                                   }));
-                    
+
                           // );
                         },
                       ),
