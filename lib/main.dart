@@ -1,4 +1,5 @@
 import 'package:birdie/forms/login_form.dart';
+import 'package:birdie/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'introduction/intro_slider.dart';
@@ -43,15 +44,15 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
         
         title: 'Birdie',
         // visualDensity: VisualDensity.adaptivePlatformDensity,
         debugShowCheckedModeBanner: false,
         home: 
-        // Home(username: 'davidtozz',)
+        Home(username: 'davidtozz',)
         
-        _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
+        // _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
         
         // Test()
 

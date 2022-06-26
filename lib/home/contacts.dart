@@ -48,19 +48,27 @@ class _ContactsState extends State<Contacts> {
     var request = await http.get(Uri.parse(
         //  'localhost:3000/api/getcontacts' // ! API HEROKU URL
         'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/getcontacts'));
-    var response = json.decode(request.body);
+    var response = await json.decode(request.body);
+
+    var test = response[0]['content'];
+
+    debugPrint('Last message sent: $test');
+
+    debugPrint('LastMessageSent List content: $lastMessageSent');
 
     setState(() {
       name.clear();
-      // lastMessageSent.clear();
+      lastMessageSent.clear();
       if (name.isEmpty && number.isEmpty) {
-        for (var i = 0; i < response.length; i++) {
+        int i = 1;
+        int j = i-1;
+        
+        for (i; i < response.length; i++) {
+          lastMessageSent.add(response[j]['content']);
           name.add(response[i]['name']);
-          lastMessageSent.add(response[i]['content']);
-          // number.add(response[i]['phone'].toString());
-
+          
         }
-        debugPrint('\nResponse body: ${response.toString()}');
+        // debugPrint('\nResponse body: ${response.toString()}');
         // debugPrint('Recent messages: ${name.toString()}');
         debugPrint('Found ${name.length} contacts for user ${widget.userName}');
       }
@@ -187,8 +195,10 @@ class _ContactsState extends State<Contacts> {
                                   subtitle: Row(
                                     children: [
                                       Text('Last: ',
-                                          style: GoogleFonts.roboto(fontWeight: FontWeight.w900)),
-                                      Text(lastMessageSent[index], style: GoogleFonts.roboto())
+                                          style: GoogleFonts.roboto(
+                                              fontWeight: FontWeight.w900)),
+                                      Text(lastMessageSent[index],
+                                          style: GoogleFonts.roboto())
                                     ],
                                   ),
                                   onTap: () {
