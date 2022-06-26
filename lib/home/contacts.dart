@@ -60,13 +60,12 @@ class _ContactsState extends State<Contacts> {
       name.clear();
       lastMessageSent.clear();
       if (name.isEmpty && number.isEmpty) {
-        int i = 1;
-        int j = i-1;
-        
-        for (i; i < response.length; i++) {
-          lastMessageSent.add(response[j]['content']);
+         
+         
+        // ? Recent fix
+        for (int i = 0; i < response.length; i++) {
           name.add(response[i]['name']);
-          
+          lastMessageSent.add(response[i]['content'] ?? '');
         }
         // debugPrint('\nResponse body: ${response.toString()}');
         // debugPrint('Recent messages: ${name.toString()}');
