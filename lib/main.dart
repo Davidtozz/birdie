@@ -1,19 +1,31 @@
-import 'package:birdie/forms/login_form.dart';
-import 'package:birdie/home/home.dart';
+// import 'package:birdie/forms/login_form.dart';
+// import 'package:birdie/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'introduction/intro_slider.dart';
 import 'package:provider/provider.dart';
+import 'package:desktop_window/desktop_window.dart';
 //import provider
+
+Future testWindowFunctions() async {
+  Size size = await DesktopWindow.getWindowSize();
+  debugPrint('$size');
+  await DesktopWindow.setWindowSize(const Size(500, 800));
+
+  await DesktopWindow.setMinWindowSize(const Size(500, 800));
+    await DesktopWindow.setMaxWindowSize(const Size(500, 800));
+  // await DesktopWindow.setMaxWindowSize(const Size(400, 800));
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // GetIt.I.registerSingleton<IsFirstRun>(IsFirstRun());
+  testWindowFunctions();
+
   runApp(
     MultiProvider(providers: [
       Provider(create: (_) => IsFirstRun()),
     ], child: const MyApp()),
-    );
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -25,14 +37,16 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool? _isFirstRun;
-  // bool? _isFirstCall;
+  
 
   void _checkFirstRun() async {
     bool ifr = await IsFirstRun.isFirstRun();
 
-    if (ifr == true) setState(() { _isFirstRun = true; });
-      
-    
+    if (ifr == true) {
+      setState(() {
+        _isFirstRun = true;
+      });
+    }
   }
 
   @override
@@ -40,23 +54,18 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _checkFirstRun();
   }
-  
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-        
+    return MaterialApp(
         title: 'Birdie',
         // visualDensity: VisualDensity.adaptivePlatformDensity,
         debugShowCheckedModeBanner: false,
-        home: 
-        Home(username: 'davidtozz',)
-        
-        // _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
-        
-        // Test()
+        home: IntroSliderPage()
 
-       
+        // _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
+
+        // Test()
 
         );
   }

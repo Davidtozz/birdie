@@ -1,11 +1,14 @@
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:birdie/home/home.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intro_slider/dot_animation_enum.dart';
 import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:birdie/forms/signup_form.dart';
+import 'package:page_transition/page_transition.dart';
 
 class IntroSliderPage extends StatefulWidget {
   @override
@@ -118,36 +121,75 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return IntroSlider(
-      showNextBtn: true,
-      showSkipBtn: false,
-      backgroundColorAllSlides: const Color.fromARGB(255, 255, 255, 255),
-      // renderSkipBtn: const Text("Skip"),
-      renderDoneBtn: TextButton(
-        child: const Icon(Icons.arrow_right_alt_outlined),
-        // style: const ButtonStyle(backgroundColor:  GlobalColors.purple),
-        ////TODO: modificare colore DONE button
-        onPressed: () => Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const SignUpForm(),
+    return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        systemOverlayStyle: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+      )
+      ),
+
+
+
+
+
+
+
+
+      body: IntroSlider(
+        renderNextBtn: const Padding(
+          padding:  EdgeInsets.only(top: 2.5, bottom: 2.5),
+          child:  FaIcon(FontAwesomeIcons.arrowRight, color: Colors.white,),
+        ),
+        showNextBtn: true,
+        showSkipBtn: false,
+        backgroundColorAllSlides: const Color.fromARGB(255, 255, 255, 255),
+        // renderSkipBtn: const Text("Skip"),
+        renderDoneBtn: Padding(
+          padding: const EdgeInsets.only(top: 2.7, bottom: 2.7),
+          child: TextButton(
+            style: TextButton.styleFrom(
+              primary: Colors.white,
+              backgroundColor: GlobalColors.purple
+            ),
+            child: const FaIcon(FontAwesomeIcons.check),
+            // style: const ButtonStyle(backgroundColor:  GlobalColors.purple),
+            ////TODO: modificare colore DONE button
+            onPressed: () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SignUpForm(),
+              ),
+            ),
           ),
         ),
-      ),
-      // Icon(Icons.done_outline_rounded, color: GlobalColors.purple,),
+        // Icon(Icons.done_outline_rounded, color: GlobalColors.purple,),
+        // renderNextBtn: const Icon(FontAwesomeIcons.arrowRight, color: Colors.black,), 
+           
+        colorDot: GlobalColors.black,
+        colorActiveDot: GlobalColors.purple,
+        nextButtonStyle: IconButton.styleFrom(
+          
+          backgroundColor: GlobalColors.purple,
+          elevation: 0,
 
-      colorDot: GlobalColors.black,
-      colorActiveDot: GlobalColors.purple,
-
-      sizeDot: 8.0,
-      typeDotAnimation: dotSliderAnimation.SIZE_TRANSITION,
-      listCustomTabs: renderListCustomTabs(),
-      scrollPhysics: const BouncingScrollPhysics(),
-      showDoneBtn: true,
-      onDonePress: () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const SignUpForm(),
+        ),
+        sizeDot: 8.0,
+        typeDotAnimation: dotSliderAnimation.SIZE_TRANSITION,
+        listCustomTabs: renderListCustomTabs(),
+        scrollPhysics: const BouncingScrollPhysics(),
+        showDoneBtn: true,
+        onDonePress: () => Navigator.pushReplacement(
+          context,
+          PageTransition(
+            duration: const Duration(milliseconds: 300),
+            childCurrent: IntroSliderPage(),
+            type: PageTransitionType.rightToLeftJoined,
+            child: const SignUpForm(),
+          ),
         ),
       ),
     );

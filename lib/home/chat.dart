@@ -227,21 +227,35 @@ class Message extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
             margin: const EdgeInsets.only(right: 10, top: 5),
-            decoration: const BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.only(
+            child: PhysicalModel(
+              elevation: 4,
+              
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
                 bottomLeft: Radius.circular(10),
                 bottomRight: Radius.circular(10),
               ),
-            ),
-            child: Text(
-              messageBody,
-              style: GoogleFonts.roboto(
-                fontSize: 15,
-                color: Colors.white,
+              color: Colors.black,
+              child: Container(
+                
+                padding: const EdgeInsets.all(10),
+                decoration: const BoxDecoration(
+                  
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  messageBody,
+                  style: GoogleFonts.roboto(
+                    fontSize: 15,
+                    color: Colors.black,
+                  ),
+                ),
               ),
             ),
           ),
@@ -254,21 +268,32 @@ class Message extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
-            margin: const EdgeInsets.only(left: 10),
-            decoration: const BoxDecoration(
-              color: GlobalColors.purple,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(10),
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
-            ),
-            child: Text(
-              messageBody,
-              style: GoogleFonts.roboto(
-                fontSize: 15,
-                color: Colors.white,
+            margin: const EdgeInsets.only(left: 10, top: 5),
+            child: PhysicalModel(
+              borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+              color: Colors.black,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                
+                decoration: const BoxDecoration(
+                  color: GlobalColors.purple,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  messageBody,
+                  style: GoogleFonts.roboto(
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ),
           ),

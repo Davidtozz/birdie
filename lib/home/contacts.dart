@@ -50,26 +50,23 @@ class _ContactsState extends State<Contacts> {
         'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/getcontacts'));
     var response = await json.decode(request.body);
 
-    var test = response[0]['content'];
+    // var test = response[0]['content'];
 
-    debugPrint('Last message sent: $test');
-
-    debugPrint('LastMessageSent List content: $lastMessageSent');
+    // debugPrint('Last message sent: $test');
 
     setState(() {
       name.clear();
       lastMessageSent.clear();
       if (name.isEmpty && number.isEmpty) {
-         
-         
         // ? Recent fix
         for (int i = 0; i < response.length; i++) {
           name.add(response[i]['name']);
-          lastMessageSent.add(response[i]['content'] ?? '');
+          lastMessageSent.add(response[i]['content'] ?? '<empty>');
         }
         // debugPrint('\nResponse body: ${response.toString()}');
         // debugPrint('Recent messages: ${name.toString()}');
         debugPrint('Found ${name.length} contacts for user ${widget.userName}');
+        debugPrint('Recent messages: $lastMessageSent');
       }
 
       if (name.last != response[response.length - 1]['name']) {

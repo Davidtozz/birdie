@@ -1,5 +1,7 @@
 // import 'dart:convert';
 // import 'dart:io';
+import 'dart:io';
+
 import 'package:birdie/forms/login_form.dart';
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:birdie/home/contacts.dart';
@@ -56,29 +58,36 @@ class _HomeState extends State<Home> {
         return Scaffold(
             // systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: Colors.transparent,
 
-            drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.5,
+            drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.8,
             drawer: Drawer(
                 width: MediaQuery.of(context).size.width * 0.8,
                 elevation: 5.0,
                 child: Stack(
                   children: [
-                    UserCard(username: widget.username),
-                    Positioned(
+                    Positioned.fill(
+                      top: 0,
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: UserCard(username: widget.username))),
+                    Positioned.fill(
                         bottom: 0,
-                        left: 25,
-                        child: SvgPicture.asset(
-                          'assets/images/profiledata.svg',
-                          height: 170,
+                        left: 0,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: SvgPicture.asset(
+                            'assets/images/profiledata.svg',
+                            height: 170,
+                          ),
                         )),
                     Positioned(
-                      top: 190,
+                      top: Platform.isWindows ? 235 : 190,
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.8,
                           maxHeight: MediaQuery.of(context).size.height * 0.5,
                         ),
-                        child: ListView(
-                          children: const [AboutAppTile()],
+                        child: Column(
+                          children: const[ AboutAppTile()],
                         ),
                       ),
                     ),
