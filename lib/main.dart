@@ -1,29 +1,39 @@
 // import 'package:birdie/forms/login_form.dart';
 // import 'package:birdie/home/home.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:is_first_run/is_first_run.dart';
+
+import 'forms/login_form.dart';
 import 'introduction/intro_slider.dart';
 import 'package:provider/provider.dart';
 import 'package:desktop_window/desktop_window.dart';
+import 'package:birdie/providers/firstrun_provider.dart';
 //import provider
 
-Future testWindowFunctions() async {
+Future setDefaultDesktopWindowSize() async {
   Size size = await DesktopWindow.getWindowSize();
   debugPrint('$size');
   await DesktopWindow.setWindowSize(const Size(500, 800));
 
   await DesktopWindow.setMinWindowSize(const Size(500, 800));
-    await DesktopWindow.setMaxWindowSize(const Size(500, 800));
+  await DesktopWindow.setMaxWindowSize(const Size(500, 800));
   // await DesktopWindow.setMaxWindowSize(const Size(400, 800));
 }
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  testWindowFunctions();
+
+  if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
+    setDefaultDesktopWindowSize();
+  }
+  
 
   runApp(
     MultiProvider(providers: [
-      Provider(create: (_) => IsFirstRun()),
+      ChangeNotifierProvider(
+        create: (_) => FirstRunProvider(),
+      ),
     ], child: const MyApp()),
   );
 }
@@ -36,34 +46,34 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool? _isFirstRun;
-  
+  // bool? _isFirstRun;
 
-  void _checkFirstRun() async {
-    bool ifr = await IsFirstRun.isFirstRun();
+  // void _checkFirstRun() async {
+  //   bool ifr = await IsFirstRun.isFirstRun();
 
-    if (ifr == true) {
-      setState(() {
-        _isFirstRun = true;
-      });
-    }
-  }
+  //   if (ifr == true) {
+  //     setState(() {
+  //       _isFirstRun = true;
+  //     });
+  //   }
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    _checkFirstRun();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _checkFirstRun();
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final isFirstRun = Provider.of<FirstRunProvider>(context);
     return MaterialApp(
         title: 'Birdie',
         // visualDensity: VisualDensity.adaptivePlatformDensity,
         debugShowCheckedModeBanner: false,
         home: IntroSliderPage()
 
-        // _isFirstRun == true ? IntroSliderPage() :  const LogInForm()
+        // isFirstRun.stRun == true ? IntroSliderPage() :  const LogInForm()
 
         // Test()
 

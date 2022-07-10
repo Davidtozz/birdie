@@ -1,3 +1,4 @@
+import 'package:birdie/providers/signup_provider.dart';
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:birdie/home/home.dart';
@@ -9,6 +10,7 @@ import 'package:intro_slider/intro_slider.dart';
 import 'package:intro_slider/slide_object.dart';
 import 'package:birdie/forms/signup_form.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:provider/provider.dart';
 
 class IntroSliderPage extends StatefulWidget {
   @override
@@ -148,21 +150,21 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
         showSkipBtn: false,
         backgroundColorAllSlides: const Color.fromARGB(255, 255, 255, 255),
         // renderSkipBtn: const Text("Skip"),
-        renderDoneBtn: Padding(
-          padding: const EdgeInsets.only(top: 2.7, bottom: 2.7),
-          child: TextButton(
-            style: TextButton.styleFrom(
-              primary: Colors.white,
-              backgroundColor: GlobalColors.purple
-            ),
-            child: const FaIcon(FontAwesomeIcons.check),
-            // style: const ButtonStyle(backgroundColor:  GlobalColors.purple),
-            ////TODO: modificare colore DONE button
-            onPressed: () => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const SignUpForm(),
-              ),
+        renderDoneBtn: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            primary: GlobalColors.purple , 
+            surfaceTintColor:  Colors.white,
+          ),
+          child: const Padding(
+            padding:  EdgeInsets.symmetric(vertical: 2.7),
+            child: FaIcon(FontAwesomeIcons.check),
+          ),
+          // style: const ButtonStyle(backgroundColor:  GlobalColors.purple),
+          ////TODO: modificare colore DONE button
+          onPressed: () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const SignUpForm(),
             ),
           ),
         ),
@@ -171,9 +173,9 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
            
         colorDot: GlobalColors.black,
         colorActiveDot: GlobalColors.purple,
-        nextButtonStyle: IconButton.styleFrom(
+        nextButtonStyle: ElevatedButton.styleFrom(
           
-          backgroundColor: GlobalColors.purple,
+          primary: GlobalColors.purple,
           elevation: 0,
 
         ),
@@ -188,7 +190,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
             duration: const Duration(milliseconds: 300),
             childCurrent: IntroSliderPage(),
             type: PageTransitionType.rightToLeftJoined,
-            child: const SignUpForm(),
+            child: ChangeNotifierProvider(child: const SignUpForm(), create: (_) => SignUpProvider()),
           ),
         ),
       ),

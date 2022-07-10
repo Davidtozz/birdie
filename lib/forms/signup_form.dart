@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:birdie/forms/login_form.dart';
 import 'package:birdie/home/contacts.dart';
+import 'package:birdie/providers/signup_provider.dart';
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:birdie/home/home.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
 import 'package:birdie/shared/avatar.dart';
-
+import 'package:provider/provider.dart';
 
 import '../shared/forms.dart';
 // import 'package:image_picker/image_picker.dart';
@@ -96,42 +97,52 @@ class _SignUpFormState extends State<SignUpForm> {
                       controller: _passwordController,
                     ),
                     const SizedBox(height: 50),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          var url =
-                              'https://birdie-auth-testing.herokuapp.com/api/users/new';
+                    Consumer<SignUpProvider>(
+                      
+                      builder: (context, consumer, __) => ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            consumer.createUser(
+                                username: _usernameController,
+                                email: _emailController,
+                                password: _passwordController.text
+                            );
 
-                          //TODO: send avatar to S3
-                          var user = json.encode({
-                            'username': _usernameController.text,
-                            'email': _emailController.text,
-                            'psw': _passwordController.text,
-                          });
-                          http.post(Uri.parse(url),
-                              headers: {'Content-Type': 'application/json'},
-                              body: user);
+                            // var url =
+                            //     'https://birdie-auth-testing.herokuapp.com/api/users/new';
 
-                          debugPrint(user);
-                        }
-                        
+                            // //TODO: send avatar to S3
+                            // var user = json.encode({
+                            //   'username': _usernameController.text,
+                            //   'email': _emailController.text,
+                            //   'psw': _passwordController.text,
+                            // });
+                            // http.post(Uri.parse(url),
+                            //     headers: {'Content-Type': 'application/json'},
+                            //     body: user);
 
-                        Navigator.pushReplacement(
-                            context,
-                            PageTransition(
-                                child: Home(username: _usernameController.text,),
-                                type:
-                                    PageTransitionType.rightToLeftWithFade));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        primary: GlobalColors.purple,
+                            // debugPrint(user);
+                          }
 
-                        // backgroundColor:
-                        //     MaterialStateProperty.all(GlobalColors.purple),
-                      ),
-                      child: Text(
-                        'Sign Up',
-                        style: GoogleFonts.roboto(color: Colors.white),
+                          Navigator.pushReplacement(
+                              context,
+                              PageTransition(
+                                  child: Home(
+                                    username: _usernameController.text,
+                                  ),
+                                  type:
+                                      PageTransitionType.rightToLeftWithFade));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: GlobalColors.purple,
+
+                          // backgroundColor:
+                          //     MaterialStateProperty.all(GlobalColors.purple),
+                        ),
+                        child: Text(
+                          'Sign Up',
+                          style: GoogleFonts.roboto(color: Colors.white),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -139,17 +150,17 @@ class _SignUpFormState extends State<SignUpForm> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text('Already have an account?',
-                            style: GoogleFonts.roboto(
-                                color: GlobalColors.black)),
+                            style:
+                                GoogleFonts.roboto(color: GlobalColors.black)),
                         GestureDetector(
                             onTap: () {
                               Navigator.pushReplacement(
                                   context,
                                   PageTransition(
-                                    childCurrent: const SignUpForm(),
+                                      childCurrent: const SignUpForm(),
                                       alignment: Alignment.topLeft,
-                                      type: PageTransitionType
-                                          .rightToLeftJoined,
+                                      type:
+                                          PageTransitionType.rightToLeftJoined,
                                       duration:
                                           const Duration(milliseconds: 500),
                                       child: const LogInForm()));
@@ -167,8 +178,3 @@ class _SignUpFormState extends State<SignUpForm> {
     ));
   }
 }
-
-
-
-
-
