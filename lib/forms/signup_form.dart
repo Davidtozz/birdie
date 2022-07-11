@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:birdie/forms/login_form.dart';
 import 'package:birdie/home/contacts.dart';
-import 'package:birdie/providers/signup_provider.dart';
+import 'package:birdie/providers/user_provider.dart';
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:birdie/home/home.dart';
 import 'package:flutter/services.dart';
@@ -97,16 +97,17 @@ class _SignUpFormState extends State<SignUpForm> {
                       controller: _passwordController,
                     ),
                     const SizedBox(height: 50),
-                    Consumer<SignUpProvider>(
-                      
-                      builder: (context, consumer, __) => ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            consumer.createUser(
-                                username: _usernameController,
-                                email: _emailController,
-                                password: _passwordController.text
-                            );
+                    Consumer<UserProvider>(
+                      builder: (context, consumer, widget) => ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) { 
+                            goToHomePage(context);
+                            await consumer.createUser(
+                                username: _usernameController.text,
+                                email: _emailController.text,
+                                password: _passwordController.text);
+
+                           
 
                             // var url =
                             //     'https://birdie-auth-testing.herokuapp.com/api/users/new';
@@ -123,21 +124,11 @@ class _SignUpFormState extends State<SignUpForm> {
 
                             // debugPrint(user);
                           }
-
-                          Navigator.pushReplacement(
-                              context,
-                              PageTransition(
-                                  child: Home(
-                                    username: _usernameController.text,
-                                  ),
-                                  type:
-                                      PageTransitionType.rightToLeftWithFade));
                         },
                         style: ElevatedButton.styleFrom(
                           primary: GlobalColors.purple,
 
-                          // backgroundColor:
-                          //     MaterialStateProperty.all(GlobalColors.purple),
+                          // backgroundColor: MaterialStateProperty.all(GlobalColors.purple),
                         ),
                         child: Text(
                           'Sign Up',
@@ -176,5 +167,17 @@ class _SignUpFormState extends State<SignUpForm> {
             ]),
       ),
     ));
+  }
+
+  void goToHomePage(BuildContext context) {
+    Navigator.pushReplacement(
+        context,
+        PageTransition(
+            child: Home(
+              // TODO: remove 'username' property from Home Widget using Providers
+              username: _usernameController.text,
+            ),
+            type: PageTransitionType
+                .rightToLeftWithFade));
   }
 }

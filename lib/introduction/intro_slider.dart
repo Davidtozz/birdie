@@ -1,4 +1,4 @@
-import 'package:birdie/providers/signup_provider.dart';
+import 'package:birdie/providers/user_provider.dart';
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:birdie/home/home.dart';
@@ -190,7 +190,8 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
             duration: const Duration(milliseconds: 300),
             childCurrent: IntroSliderPage(),
             type: PageTransitionType.rightToLeftJoined,
-            child: ChangeNotifierProvider(child: const SignUpForm(), create: (_) => SignUpProvider()),
+
+            child: const SignUpForm(),
           ),
         ),
       ),

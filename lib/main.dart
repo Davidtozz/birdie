@@ -9,6 +9,8 @@ import 'introduction/intro_slider.dart';
 import 'package:provider/provider.dart';
 import 'package:desktop_window/desktop_window.dart';
 import 'package:birdie/providers/firstrun_provider.dart';
+
+import 'providers/user_provider.dart';
 //import provider
 
 Future setDefaultDesktopWindowSize() async {
@@ -34,6 +36,9 @@ void main() {
       ChangeNotifierProvider(
         create: (_) => FirstRunProvider(),
       ),
+      ChangeNotifierProvider(create: (_) => UserProvider())
+      
+
     ], child: const MyApp()),
   );
 }
