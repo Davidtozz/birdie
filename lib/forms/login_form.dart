@@ -6,8 +6,6 @@ import 'package:birdie/home/home.dart';
 import 'package:birdie/shared/forms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -110,8 +108,7 @@ class _LogInFormState extends State<LogInForm> {
                                 context,
                                 PageTransition(
                                   type: PageTransitionType.bottomToTop,
-                                  child:
-                                      Home(username: _usernameController.text),
+                                  child: Home(username: _usernameController.text,),
                                 ),
                               );
                             }

@@ -48,6 +48,8 @@ class _SignUpFormState extends State<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
         body: Center(
       child: SingleChildScrollView(
@@ -84,7 +86,7 @@ class _SignUpFormState extends State<SignUpForm> {
                             icon: FontAwesomeIcons.arrowUpFromBracket,
                             size: 22),
                       ),
-                      onTap: () {},
+                      onTap: () {}, // TODO: select image and preview it
                     ),
 
                     UsernameTextField(
@@ -99,16 +101,14 @@ class _SignUpFormState extends State<SignUpForm> {
                     const SizedBox(height: 50),
                     Consumer<UserProvider>(
                       builder: (context, consumer, widget) => ElevatedButton(
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) { 
-                            goToHomePage(context);
-                            await consumer.createUser(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            
+                             consumer.createUser(
                                 username: _usernameController.text,
                                 email: _emailController.text,
-                                password: _passwordController.text);
-
-                           
-
+                                password: _passwordController.text).then((value) => goToHomePage(context));
+                          
                             // var url =
                             //     'https://birdie-auth-testing.herokuapp.com/api/users/new';
 
@@ -174,10 +174,9 @@ class _SignUpFormState extends State<SignUpForm> {
         context,
         PageTransition(
             child: Home(
-              // TODO: remove 'username' property from Home Widget using Providers
-              username: _usernameController.text,
-            ),
-            type: PageTransitionType
-                .rightToLeftWithFade));
+                // TODO: remove 'username' property from Home Widget using Providers
+                username: _usernameController.text,
+                ),
+            type: PageTransitionType.rightToLeftWithFade));
   }
 }

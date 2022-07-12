@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:birdie/forms/login_form.dart';
+import 'package:birdie/providers/user_provider.dart';
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:birdie/home/contacts.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,7 @@ import 'package:birdie/shared/avatar.dart';
 import 'package:http/http.dart' as http;
 import 'package:page_transition/page_transition.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:url_launcher/url_launcher_string.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key, required this.username}) : super(key: key);
@@ -34,28 +35,25 @@ class _HomeState extends State<Home> {
   //   ),
   // ];
 
-  late Future fetchData;
+  // ! late Future fetchData;
 
   @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    fetchData = _getUserData();
+    
   }
 
-  Future<void> _getUserData() async {
-    var url = 'https://birdie-api.herokuapp.com/api/users/${widget.username}';
-    await http.get(Uri.parse(url));
-  }
+  // ! Future<void> _getUserData() async {
+  // !  var url = 'https://birdie-api.herokuapp.com/api/users/${widget.username}';
+  // !  await http.get(Uri.parse(url));
+  // ! }
 
   int bottomNavigationIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: fetchData,
-      builder: (context, snapshot) {
-        return Scaffold(
+   return Scaffold(
             // systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: Colors.transparent,
 
             drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.8,
@@ -65,10 +63,11 @@ class _HomeState extends State<Home> {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      top: 0,
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: UserCard(username: widget.username))),
+                        top: 0,
+                        child: Align(
+                            alignment: Alignment.topCenter,
+                            child:
+                                UserCard(username: widget.username))),
                     Positioned.fill(
                         bottom: 0,
                         left: 0,
@@ -80,14 +79,14 @@ class _HomeState extends State<Home> {
                           ),
                         )),
                     Positioned(
-                      top: Platform.isWindows ? 235 : 190,
+                      top: Platform.isAndroid ? 190 : 235,
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           maxWidth: MediaQuery.of(context).size.width * 0.8,
                           maxHeight: MediaQuery.of(context).size.height * 0.5,
                         ),
                         child: Column(
-                          children: const[ AboutAppTile()],
+                          children: const [AboutAppTile()],
                         ),
                       ),
                     ),
@@ -106,34 +105,9 @@ class _HomeState extends State<Home> {
             ),
             body: PageView(physics: const BouncingScrollPhysics(), children: [
               Contacts(userName: widget.username),
-            ])
-
-            //screens[bottomNavigationIndex],
-            // bottomNavigationBar: NavigationBarTheme(
-            //   data: const NavigationBarThemeData(
-            //     height: 55,
-            //     indicatorColor: Colors.white,
-            //     backgroundColor: GlobalColors.purple,
-            //   ),
-            //   child: NavigationBar(
-            //     labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-            //     selectedIndex: bottomNavigationIndex,
-            //     onDestinationSelected: (index) =>
-            //         {setState(() => bottomNavigationIndex = index)},
-            //     // backgroundColor: GlobalColors.black,
-            //     destinations: const [
-            //       NavigationDestination(
-            //           icon: FaIcon(FontAwesomeIcons.users), label: "Contacts"),
-            //       NavigationDestination(
-            //           // TODO:
-            //           icon: FaIcon(FontAwesomeIcons.userGroup),
-            //           label: "View groups"),
-            //     ],
-            //   ),
-            // ),
-            );
-      },
-    );
+            ]));
+      
+    
   }
 }
 
@@ -245,7 +219,7 @@ class AboutAppTile extends StatelessWidget {
                                         fontSize: 15,
                                         color: GlobalColors.black,
                                         fontWeight: FontWeight.w500)),
-                                        const SizedBox(width: 15),
+                                const SizedBox(width: 15),
                                 GestureDetector(
                                   onTap: () async {
                                     var url =

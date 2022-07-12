@@ -2,6 +2,8 @@
 // import 'package:birdie/home/home.dart';
 import 'dart:io';
 
+import 'package:birdie/forms/signup_form.dart';
+import 'package:birdie/providers/contact_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'forms/login_form.dart';
@@ -11,6 +13,8 @@ import 'package:desktop_window/desktop_window.dart';
 import 'package:birdie/providers/firstrun_provider.dart';
 
 import 'providers/user_provider.dart';
+
+
 //import provider
 
 Future setDefaultDesktopWindowSize() async {
@@ -36,7 +40,8 @@ void main() {
       ChangeNotifierProvider(
         create: (_) => FirstRunProvider(),
       ),
-      ChangeNotifierProvider(create: (_) => UserProvider())
+      ChangeNotifierProvider(create: (_) => UserProvider()),
+      ChangeNotifierProvider(create: (_) => ContactProvider())
       
 
     ], child: const MyApp()),
@@ -76,7 +81,9 @@ class _MyAppState extends State<MyApp> {
         title: 'Birdie',
         // visualDensity: VisualDensity.adaptivePlatformDensity,
         debugShowCheckedModeBanner: false,
-        home: IntroSliderPage()
+        home: SignUpForm()
+        
+        // IntroSliderPage()
 
         // isFirstRun.stRun == true ? IntroSliderPage() :  const LogInForm()
 

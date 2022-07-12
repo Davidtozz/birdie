@@ -88,9 +88,6 @@ class _ChatState extends State<Chat> {
     }
   }
 
-
-  
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -230,7 +227,6 @@ class Message extends StatelessWidget {
             margin: const EdgeInsets.only(right: 10, top: 5),
             child: PhysicalModel(
               elevation: 4,
-              
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10),
                 bottomLeft: Radius.circular(10),
@@ -238,10 +234,8 @@ class Message extends StatelessWidget {
               ),
               color: Colors.black,
               child: Container(
-                
                 padding: const EdgeInsets.all(10),
                 decoration: const BoxDecoration(
-                  
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10),
@@ -271,14 +265,13 @@ class Message extends StatelessWidget {
             margin: const EdgeInsets.only(left: 10, top: 5),
             child: PhysicalModel(
               borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
+                topRight: Radius.circular(10),
+                bottomLeft: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              ),
               color: Colors.black,
               child: Container(
                 padding: const EdgeInsets.all(10),
-                
                 decoration: const BoxDecoration(
                   color: GlobalColors.purple,
                   borderRadius: BorderRadius.only(
