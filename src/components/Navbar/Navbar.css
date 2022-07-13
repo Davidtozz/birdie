@@ -1,0 +1,33 @@
+nav{
+    display: flex;
+    background: linear-gradient(
+        90deg,
+        rgba(150, 125, 251, 1) 0%,
+        rgba(149, 145, 252, 1) 50%,
+        rgba(178, 105, 251, 1) 100%  
+         );
+
+    top: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    /* background-color: #6F69FB; */
+    height: 5rem;
+    width: 100%;
+    
+}
+
+ul {
+    /* left: -1.2rem; */
+    list-style: none;
+    
+    flex-direction: row;
+    align-items: center;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+ul li {   
+    margin-bottom: 2.5rem;
+}
