@@ -60,36 +60,29 @@ class _HomeState extends State<Home> {
             drawer: Drawer(
                 width: MediaQuery.of(context).size.width * 0.8,
                 elevation: 5.0,
-                child: Stack(
+                child: Column(
                   children: [
-                    Positioned.fill(
-                        top: 0,
-                        child: Align(
-                            alignment: Alignment.topCenter,
-                            child:
-                                UserCard(username: widget.username))),
-                    Positioned.fill(
-                        bottom: 0,
-                        left: 0,
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: SvgPicture.asset(
-                            'assets/images/profiledata.svg',
-                            height: 170,
-                          ),
-                        )),
-                    Positioned(
-                      top: Platform.isAndroid ? 190 : 235,
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxWidth: MediaQuery.of(context).size.width * 0.8,
-                          maxHeight: MediaQuery.of(context).size.height * 0.5,
-                        ),
-                        child: Column(
-                          children: const [AboutAppTile()],
-                        ),
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: UserCard(username: widget.username)
+                    ),
+                   
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: double.infinity,
+                        maxHeight: MediaQuery.of(context).size.height * 0.5,
+                      ),
+                      child: Column(
+                        children: const [AboutAppTile()],
                       ),
                     ),
+                     Align(
+                       alignment: Alignment.bottomCenter,
+                       child: SvgPicture.asset(
+                         'assets/images/profiledata.svg',
+                         height: 170,
+                       ),
+                     ),
                   ],
                 )),
             appBar: AppBar(
@@ -106,8 +99,6 @@ class _HomeState extends State<Home> {
             body: PageView(physics: const BouncingScrollPhysics(), children: [
               Contacts(userName: widget.username),
             ]));
-      
-    
   }
 }
 
@@ -118,145 +109,148 @@ class AboutAppTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-        dense: true,
-        leading: const FaIcon(
-          FontAwesomeIcons.circleInfo,
-          size: 40,
-          color: GlobalColors.purple,
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: ListTile(
+          dense: true,
+          leading: const FaIcon(
+            FontAwesomeIcons.circleInfo,
+            size: 40,
+            color: GlobalColors.purple,
+          ),
 
-        //  aboutBoxChildren: const[
-        //    Text('This app is a prototype for a new social network.'),
-        //  ],
-        title: Text(
-          'About this app',
-          style: GoogleFonts.roboto(
-              fontSize: 20,
-              color: GlobalColors.purple,
-              fontWeight: FontWeight.w500),
-        ),
-        onTap: () {
-          showDialog(
-              context: context,
-              builder: (context) => Dialog(
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Stack(children: [
-                        Positioned(
-                          top: 15,
-                          left: 15,
-                          child: SvgPicture.asset(
-                            'assets/images/male_avatar.svg',
-                            height: 100,
-                          ),
+          //  aboutBoxChildren: const[
+          //    Text('This app is a prototype for a new social network.'),
+          //  ],
+          title: Text(
+            'About this app',
+            style: GoogleFonts.roboto(
+                fontSize: 20,
+                color: GlobalColors.purple,
+                fontWeight: FontWeight.w500),
+          ),
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
                         ),
-                        Positioned(
-                          left: 125,
-                          top: 20,
-                          child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Birdie',
-                                  style: GoogleFonts.roboto(
-                                      fontSize: 35,
-                                      color: GlobalColors.purple,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                const SizedBox(
-                                  height: 15,
-                                ),
-                                Text(
-                                  'Version 1.0.0',
-                                  style: GoogleFonts.roboto(
-                                      fontSize: 15,
-                                      color: GlobalColors.black,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                Text(
-                                  '© 2022 davidtozz',
-                                  style: GoogleFonts.roboto(
-                                      fontSize: 15,
-                                      color: Colors.grey[500],
-                                      fontWeight: FontWeight.w500),
-                                ),
-                              ]),
-                        ),
-                        Positioned(
-                          bottom: 70,
-                          left: 15,
-                          child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.7,
-                              maxHeight:
-                                  MediaQuery.of(context).size.height * 0.3,
-                            ),
-                            child: Text(
-                              'This app is a prototype of a new social media network.',
-                              style: GoogleFonts.roboto(
-                                  fontSize: 15,
-                                  color: GlobalColors.black,
-                                  fontWeight: FontWeight.w500),
+                        child: Stack(children: [
+                          Positioned(
+                            top: 15,
+                            left: 15,
+                            child: SvgPicture.asset(
+                              'assets/images/male_avatar.svg',
+                              height: 100,
                             ),
                           ),
-                        ),
-                        Positioned(
-                            bottom: 15,
-                            right: 15,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text('Follow me on:',
+                          Positioned(
+                            left: 125,
+                            top: 20,
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Birdie',
+                                    style: GoogleFonts.roboto(
+                                        fontSize: 35,
+                                        color: GlobalColors.purple,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+                                  Text(
+                                    'Version 1.0.0',
                                     style: GoogleFonts.roboto(
                                         fontSize: 15,
                                         color: GlobalColors.black,
-                                        fontWeight: FontWeight.w500)),
-                                const SizedBox(width: 15),
-                                GestureDetector(
-                                  onTap: () async {
-                                    var url =
-                                        'https://www.linkedin.com/in/davide-pulvirenti/';
-                                    // await launchUrl(Uri.parse(url));
-
-                                    if (await canLaunchUrl(Uri.parse(url)) ==
-                                        true) {
-                                      debugPrint('launching url');
-                                      launchUrl(Uri.parse(url));
-                                    } else {
-                                      debugPrint('Could not launch $url');
-                                    }
-                                  },
-                                  child: const FaIcon(
-                                    FontAwesomeIcons.linkedin,
-                                    color: Color(0xFF0A66C2),
-                                    size: 35,
+                                        fontWeight: FontWeight.w500),
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 15,
-                                ),
-                                GestureDetector(
-                                  child: const FaIcon(
-                                    FontAwesomeIcons.github,
-                                    size: 35,
+                                  Text(
+                                    '© 2022 davidtozz',
+                                    style: GoogleFonts.roboto(
+                                        fontSize: 15,
+                                        color: Colors.grey[500],
+                                        fontWeight: FontWeight.w500),
                                   ),
-                                ),
-                              ],
-                            ))
-                      ]),
-                    ),
-                  ));
+                                ]),
+                          ),
+                          Positioned(
+                            bottom: 70,
+                            left: 15,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: MediaQuery.of(context).size.width * 0.7,
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.3,
+                              ),
+                              child: Text(
+                                'This app is a prototype of a new social media network.',
+                                style: GoogleFonts.roboto(
+                                    fontSize: 15,
+                                    color: GlobalColors.black,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                              bottom: 15,
+                              right: 15,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text('Follow me on:',
+                                      style: GoogleFonts.roboto(
+                                          fontSize: 15,
+                                          color: GlobalColors.black,
+                                          fontWeight: FontWeight.w500)),
+                                  const SizedBox(width: 15),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      var url =
+                                          'https://www.linkedin.com/in/davide-pulvirenti/';
+                                      // await launchUrl(Uri.parse(url));
 
-          // },
-        });
+                                      if (await canLaunchUrl(Uri.parse(url)) ==
+                                          true) {
+                                        debugPrint('launching url');
+                                        launchUrl(Uri.parse(url));
+                                      } else {
+                                        debugPrint('Could not launch $url');
+                                      }
+                                    },
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.linkedin,
+                                      color: Color(0xFF0A66C2),
+                                      size: 35,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 15,
+                                  ),
+                                  GestureDetector(
+                                    child: const FaIcon(
+                                      FontAwesomeIcons.github,
+                                      size: 35,
+                                    ),
+                                  ),
+                                ],
+                              ))
+                        ]),
+                      ),
+                    ));
+
+            // },
+          }),
+    );
   }
 }
 

@@ -56,23 +56,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // bool? _isFirstRun;
 
-  // void _checkFirstRun() async {
-  //   bool ifr = await IsFirstRun.isFirstRun();
-
-  //   if (ifr == true) {
-  //     setState(() {
-  //       _isFirstRun = true;
-  //     });
-  //   }
-  // }
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _checkFirstRun();
-  // }
 
   @override
   Widget build(BuildContext context) {

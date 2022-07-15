@@ -38,24 +38,5 @@ class UserProvider extends User with ChangeNotifier {
 
   String? get loggedUser => User.getUsername();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
   // get justRegisteredUser => user;
 }

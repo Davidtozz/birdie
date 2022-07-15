@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:birdie/providers/contact_provider.dart';
 import 'package:birdie/shared/globalcolors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,12 +9,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'chat.dart';
 
 class Contacts extends StatefulWidget {
-  const Contacts({Key? key, required this.userName}) : super(key: key);
+  Contacts({Key? key, this.userName}) : super(key: key);
 
-  final String userName;
+  String? userName;
 
   // static fetchData() async {}
 
@@ -27,80 +29,21 @@ class _ContactsState extends State<Contacts> {
   late Future fetchFromAWS;
   var dialogContactNameController = TextEditingController();
 
-  @override
-  void initState() {
-    // TODO: implement initState
 
-    name.clear();
-    fetchFromAWS = fetchData();
-
-    super.initState();
-  }
 
   List<String> name = [], number = []; // ! Info achieeved from server
 
   String lastOnline = '15:16'; //todo: retrieve info from DB
   List<String> lastMessageSent = []; //todo: retrieve info from DB
 
-  Future<void> fetchData() async {
-    debugPrint('Fetching user ${widget.userName} data');
+ 
 
-    var request = await http.get(Uri.parse(
-        //  'localhost:3000/api/getcontacts' // ! API HEROKU URL
-        'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/getcontacts'));
-    var response = await json.decode(request.body);
-
-    // var test = response[0]['content'];
-
-    // debugPrint('Last message sent: $test');
-
-    setState(() {
-      name.clear();
-      lastMessageSent.clear();
-      if (name.isEmpty && number.isEmpty) {
-        // ? Recent fix
-        for (int i = 0; i < response.length; i++) {
-          name.add(response[i]['name']);
-          lastMessageSent.add(response[i]['content'] ?? '<empty>');
-        }
-        // debugPrint('\nResponse body: ${response.toString()}');
-        // debugPrint('Recent messages: ${name.toString()}');
-        debugPrint('Found ${name.length} contacts for user ${widget.userName}');
-        debugPrint('Recent messages: $lastMessageSent');
-      }
-
-      if (name.last != response[response.length - 1]['name']) {
-        name.add(response[response.length - 1]['name']);
-      }
-    });
-  }
-
-  Future<void> deleteContact({required String contactName}) async {
-    var url =
-        'https://birdie-auth-testing.herokuapp.com/api/users/${widget.userName}/deletecontact';
-
-    var chosenContact = json.encode({'name': contactName});
-
-    await http
-        .delete(Uri.parse(url),
-            headers: {'Content-Type': 'application/json'}, body: chosenContact)
-        .then((value) {
-      if (value.statusCode == 200) {
-        debugPrint('Deleted contact: $contactName');
-        setState(() {
-          debugPrint('$name before');
-          name.remove(contactName);
-          debugPrint('$name after');
-          fetchFromAWS = fetchData();
-        });
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) => FutureBuilder(
-        future: fetchFromAWS,
+        future: Provider.of<ContactProvider>(context),
         builder: ((context, snapshot) {
+          var contactProvider = Provider.of<ContactProvider>(context);
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: SizedBox(
@@ -115,7 +58,7 @@ class _ContactsState extends State<Contacts> {
             );
           } else {
             return Scaffold(
-                body: name.isEmpty
+                body: contactProvider.contactNameList.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -141,8 +84,8 @@ class _ContactsState extends State<Contacts> {
                         ),
                       )
                     : ListView.builder(
-                        itemCount: name
-                            .length, // ! itemCount is known by the amount of contacts present in the DB
+                        itemCount:contactProvider.contactNameList.length, 
+                        // ! itemCount is known by the amount of contacts present in the DB
                         itemBuilder: (context, index) {
                           return GestureDetector(
                               onLongPress: () => showDialog(
@@ -151,7 +94,7 @@ class _ContactsState extends State<Contacts> {
                                   builder: (context) => AlertDialog(
                                           title: const Text("Delete contact"),
                                           content: Text(
-                                              "Are you sure you want to delete ${name[index]}?"),
+                                              "Are you sure you want to delete ${contactProvider.contactNameList[index]}?"),
                                           actions: <Widget>[
                                             TextButton(
                                               child: const Text("Cancel"),
@@ -165,9 +108,14 @@ class _ContactsState extends State<Contacts> {
                                                 child: const Text("Delete"),
                                                 onPressed: () {
                                                   //delete the contact
+                                                  contactProvider.deleteContact(
+                                                    contactName: name[index],
+                                                    userName: widget.userName
+                                                  );
+                                                  // deleteContact(
+                                                  //     contactName: name[index]);
+                                                  setState(() {});
 
-                                                  deleteContact(
-                                                      contactName: name[index]);
                                                   Navigator.of(context).pop();
                                                 })
                                           ])),
@@ -175,9 +123,9 @@ class _ContactsState extends State<Contacts> {
                                   leading: CircleAvatar(
                                     backgroundColor: GlobalColors.purple,
                                     child: Text(
-                                      name.isEmpty
+                                      contactProvider.contactNameList.isEmpty
                                           ? 'A'
-                                          : name[index][0].toUpperCase(),
+                                          : contactProvider.contactNameList[index][0].toUpperCase(),
                                       // ! if contact isn't saved with a name, show his number instead
                                       textAlign: TextAlign.center,
                                       style: GoogleFonts.roboto(
@@ -186,14 +134,14 @@ class _ContactsState extends State<Contacts> {
                                       ),
                                     ),
                                   ),
-                                  title: Text(name[index],
+                                  title: Text(contactProvider.contactNameList[index],
                                       style: GoogleFonts.roboto()),
                                   subtitle: Row(
                                     children: [
                                       Text('Last: ',
                                           style: GoogleFonts.roboto(
                                               fontWeight: FontWeight.w900)),
-                                      Text(lastMessageSent[index],
+                                      Text(contactProvider.lastMessageSent[index],
                                           style: GoogleFonts.roboto())
                                     ],
                                   ),
@@ -207,8 +155,8 @@ class _ContactsState extends State<Contacts> {
                                             // reverseDuration: const Duration(milliseconds: 200),
                                             type: PageTransitionType.fade,
                                             child: Chat(
-                                              userName: widget.userName,
-                                              contactName: name[
+                                              userName: widget.userName!,
+                                              contactName: contactProvider.contactNameList[
                                                   index], // ! pass contact name to Chat widget
                                               // ! pass contact number to Chat widget
                                               lastOnline:
@@ -227,8 +175,8 @@ class _ContactsState extends State<Contacts> {
                       child: FloatingActionButton.small(
                         // ? Refresh FAB
                         onPressed: (() => setState(() {
-                              name.clear();
-                              fetchFromAWS = fetchData();
+                              contactProvider.contactNameList.clear();
+                              // fetchFromAWS = fetchData();
                             })),
                         backgroundColor: Colors.grey[600],
                         heroTag: 'refresh',
@@ -264,8 +212,8 @@ class _ContactsState extends State<Contacts> {
                                   dialogContactNameController.text = value = "";
                                   Navigator.pop(context);
                                   setState(() {
-                                    name.add(value);
-                                    fetchFromAWS = fetchData();
+                                    contactProvider.contactNameList.add(value);
+                                    // fetchFromAWS = fetchData();
                                   });
 
                                   // dialogController.text = value;
@@ -298,8 +246,8 @@ class _ContactsState extends State<Contacts> {
 
                                   Navigator.of(context).pop();
                                   setState(() {
-                                    name.add(dialogContactNameController.text);
-                                    fetchFromAWS = fetchData();
+                                    contactProvider.contactNameList.add(dialogContactNameController.text);
+                                    // fetchFromAWS = fetchData();
                                   });
                                   dialogContactNameController.clear();
                                 },
